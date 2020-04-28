@@ -18,7 +18,6 @@ class PlayGame:
         self.p2_hand= [0, 0, 0, 0, 0, 0, 0]
         self.p1_discard = [0, 0, 0, 0, 0, 0, 0]
         self.p2_discard = [0, 0, 0, 0, 0, 0, 0]
-        self.p1_total = [0, 0 ,0 ,0 ,0 ,0 ,0]
         
         if verbose:
             print("Player 1: {}".format(self.p1.name))
