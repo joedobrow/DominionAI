@@ -1,3 +1,10 @@
+from TomBot import TomBot
+from ExampleBot import RandBot
+
+from Environment import Environment
+import random
+
+
 class PlayGame:
     
     def __init__(self, bot1, bot2, verbose=False):
@@ -11,6 +18,7 @@ class PlayGame:
             self.p1 = bot2
             
         self.env = Environment()
+        self.verbose = verbose
         
         self.p1_deck = [7, 0, 0, 3, 0, 0, 0]
         self.p2_deck = [7, 0, 0, 3, 0, 0, 0]
@@ -29,23 +37,28 @@ class PlayGame:
         self.clean_up(1)
         self.clean_up(-1)
         
-        for _ in range(1000):
+        for turn_number in range(1000):
             
             move = self.p1.get_moves(self.env, self.p1_deck, self.p1_hand, self.p1_discard)
+            if self.verbose:
+                print(self.p1.name + " buy a: " + get_card_name(move))
             if move >= 0:
                 self.p1_discard[move] += 1
                 self.env.card_counts[move] -= 1
             if self.env.check_win():
-                return self.declare_winner()
+                return [self.declare_winner(), turn_number]
             self.clean_up(1)
                 
             move = self.p2.get_moves(self.env, self.p2_deck, self.p2_hand, self.p2_discard)
+            if self.verbose:
+                print(self.p2.name + " buy a: " + get_card_name(move))
             if move >= 0:
                 self.p2_discard[move] += 1
                 self.env.card_counts[move] -= 1
             if self.env.check_win():
-                return self.declare_winner()
+                return [self.declare_winner(), turn_number]
             self.clean_up(-1)
+
                        
     def clean_up(self, player):
 
@@ -90,7 +103,7 @@ class PlayGame:
                 return -1
             else:
                 return 1
-        
+    
     def get_vp(self, player):
         
         if player == 1:
@@ -98,3 +111,20 @@ class PlayGame:
         else:
             return self.p2_deck[3]+self.p2_deck[4]*3+self.p2_deck[5]*6+self.p2_hand[3]+self.p2_hand[4]*3+self.p2_hand[5]*6+self.p2_discard[3]+self.p2_discard[4]*3+self.p2_discard[5]*6
         
+def get_card_name(index):
+    if index == -1:
+        return 'No Buy'
+    return ['Copper', 'Silver', 'Gold', 'Estate', 'Duchy', 'Province', 'Curse'][index]
+
+
+tom_wins = 0
+joe_wins = 0
+for _ in range(100):
+    result = PlayGame(TomBot(), RandBot(), True).play_game()
+    if result[0] == 1:
+        tom_wins += 1
+    else:
+        joe_wins += 1
+print("Tom: " + str(tom_wins))
+print("Joe: " + str(joe_wins))
+

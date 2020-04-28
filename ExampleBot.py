@@ -1,3 +1,5 @@
+import random
+
 class RandBot:
     
     def __init__(self):
