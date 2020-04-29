@@ -1,6 +1,6 @@
 import random
 
-class RandBot:
+class ExampleBot:
     
     def __init__(self):
         
@@ -9,17 +9,15 @@ class RandBot:
     def get_moves(self, env, deck, hand, discard):
         
             
-        money = hand[0] + hand[1] * 2 + hand[2] * 3
+        money = hand['copper'] + hand['silver'] * 2 + hand['gold'] * 3
         moves = []
-        for i in range(7):
-            if money >= env.money_map[i]:
-                moves.append(i)
-        
-        for _ in range(100):
-            
+        for card in env.card_map.keys():
+            if (money >= env.card_map[card]['cost']) and env.card_map[card]['supply'] > 0:
+                moves.append(card)
+           
+        try:
             move = random.choice(moves)
-            if env.card_counts[move] > 0:
-                return move
-            
-        # indicates an error    
-        return -1
+            return move
+        except: 
+            # indicates an error  
+            return -1
