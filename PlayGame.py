@@ -40,27 +40,44 @@ class PlayGame:
         self.clean_up(1)
         self.clean_up(-1)
         
-        for _ in range(5000):
+        for _ in range(2000):
             
             move = self.p1.get_moves(self.env, self.p1_deck, self.p1_hand, self.p1_discard)
             if move in self.env.card_map.keys():
-                self.p1_discard[move] += 1
-                self.env.card_map[move]['supply'] -= 1
-                self.p1_move_list.append(move)
+                coin = 0
+                for card in self.p1_hand.keys():
+                    coin += self.p1_hand[card] * self.env.card_map[card]['coin']
+                if (self.env.card_map[move]['supply'] > 0) and (coin >= self.env.card_map[move]['cost']):
+                    self.p1_discard[move] += 1
+                    self.env.card_map[move]['supply'] -= 1
+                    self.p1_move_list.append(move)
+                else:
+                    self.p1_move_list.append('Error bad bot move')
+            else:
+                self.p1_move_list.append('bot bad or no return')
             if self.env.check_win():
                 return self.declare_winner()
             self.clean_up(1)
                 
             move = self.p2.get_moves(self.env, self.p2_deck, self.p2_hand, self.p2_discard)
             if move in self.env.card_map.keys():
-                self.p2_discard[move] += 1
-                self.env.card_map[move]['supply'] -= 1
-                self.p2_move_list.append(move)
+                coin = 0
+                for card in self.p2_hand.keys():
+                    coin += self.p2_hand[card] * self.env.card_map[card]['coin']
+                if (self.env.card_map[move]['supply'] > 0) and (coin >= self.env.card_map[move]['cost']):
+                    self.p2_discard[move] += 1
+                    self.env.card_map[move]['supply'] -= 1
+                    self.p2_move_list.append(move)
+                else:
+                    self.p1_move_list.append('Error bad bot move')
+            else:
+                self.p1_move_list.append('bot bad or no return')
             if self.env.check_win():
                 return self.declare_winner()
             self.clean_up(-1)
 
-        return 'error'
+        print('Time Out')
+        return self.declare_winner()
                        
     def clean_up(self, player):
 

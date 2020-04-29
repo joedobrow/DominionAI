@@ -20,5 +20,4 @@ class ExampleBot:
             return move
         except: 
             # indicates an error  
-            print('error 1')  
             return -1
