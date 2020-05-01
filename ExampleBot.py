@@ -7,8 +7,7 @@ class ExampleBot:
         self.name = "RandBot"
     
     def get_moves(self, env, deck, hand, discard):
-        
-            
+         
         money = hand['copper'] + hand['silver'] * 2 + hand['gold'] * 3
         moves = []
         for card in env.card_map.keys():
