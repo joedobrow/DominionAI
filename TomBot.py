@@ -13,36 +13,34 @@ class TomBot:
 
 	def get_moves(self, env, deck, hand, discard):
 
-		# print("avg: " + str(average_money_in_total(deck, hand, discard)))
+		self.strategy_mode = self.update_strategy_mode(env.card_map, deck, hand, discard)
 
-		self.strategy_mode = self.update_strategy_mode(env.card_counts, deck, hand, discard)
-
-		money = hand[0] + hand[1]*2 + hand[2]*3
+		money = hand['copper'] + hand['silver']*2 + hand['gold']*3
 
 		if self.strategy_mode == 0:
-			return self.buy_best_money_card(env.money_map, env.card_counts, money, deck, hand, discard)
+			return self.buy_best_money_card(env.card_map, money, deck, hand, discard)
 
 		if self.strategy_mode == 1:
-			if can_buy_province(money, env.money_map):
-				return 5
+			if can_buy_province(money, env.card_map):
+				return 'province'
 			else:
-				return self.buy_best_money_card(env.money_map, env.card_counts, money, deck, hand, discard)
+				return self.buy_best_money_card(env.card_map, money, deck, hand, discard)
 
 		if self.strategy_mode == 2:
-			return buy_best_vp_card(env.money_map, env.card_counts, money)
+			return buy_best_vp_card(env.card_map, money)
 
 		# buy nothing
 		return -1
 
-	def update_strategy_mode(self, card_counts, deck, hand, discard):
+	def update_strategy_mode(self, card_map, deck, hand, discard):
 		# if two or less provinces, transition to 2
-		if card_counts[5] <= 2:
+		if card_map['province']['supply'] <= 3:
 			return 2
 
 		# if two piles are out, transition to 2
 		piles_out = 0
-		for i in card_counts:
-			if i == 0:
+		for key in card_map:
+			if card_map[key]['supply'] == 0:
 				piles_out += 1
 		if piles_out > 1:
 			return 2
@@ -56,30 +54,30 @@ class TomBot:
 			return 1
 
 		# if all the golds are bought out, transition to 1
-		if card_counts[2] == 0:
+		if card_map['gold']['supply'] == 0:
 			return 1
 
 		return 0
 
-	def buy_best_money_card(self, money_map, card_counts, money, deck, hand, discard):
-		if money >= money_map[2] and card_counts[2] > 0:
-			return 2
-		if money >= money_map[1] and card_counts[1] > 0 and average_money_in_total(deck, hand, discard) <= self.dont_buy_silver_past_coin_average_in_deck:
-			return 1
+	def buy_best_money_card(self, card_map, money, deck, hand, discard):
+		if money >= card_map['gold']['cost'] and card_map['gold']['supply'] > 0:
+			return 'gold'
+		if money >= card_map['silver']['cost'] and card_map['silver']['supply'] > 0 and average_money_in_total(deck, hand, discard) <= self.dont_buy_silver_past_coin_average_in_deck:
+			return 'silver'
 		return -1 # dont buy copper dummy
 
-def buy_best_vp_card(money_map, card_counts, money):
-	if can_buy_province(money, money_map):
-		return 5
-	if money >= money_map[4] and card_counts[4] > 0:
-		return 4
-	if money >= money_map[3] and card_counts[3] > 0:
-		return 3
+def buy_best_vp_card(card_map, money):
+	if can_buy_province(money, card_map):
+		return 'province'
+	if money >= card_map['duchy']['cost'] and card_map['duchy']['supply'] > 0:
+		return 'duchy'
+	if money >= card_map['estate']['cost'] and card_map['estate']['supply'] > 0:
+		return 'estate'
 	return -1 # dont buy curses dummy
 
 
-def can_buy_province(money, money_map):
-	return money >= money_map[5]
+def can_buy_province(money, card_map):
+	return money >= card_map['province']['cost']
 
 # not used, but probably good to have
 def average_money_in_deck(deck, hand, discard):
@@ -89,9 +87,9 @@ def average_money_in_total(deck, hand, discard):
 	return ((money_in_object(deck) + money_in_object(discard) + money_in_object(hand)) / num_cards_i_got(deck, hand, discard)) * 5
 
 def money_in_object(array):
-	return array[0] + array[1]*2 + array[2]*3
+	return array['copper'] + array['silver']*2 + array['gold']*3
 
 def num_cards_i_got(deck, hand, discard):
-	return sum(deck) + sum(hand) + sum(discard)
+	return sum(deck.values()) + sum(hand.values()) + sum(discard.values())
 
 

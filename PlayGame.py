@@ -40,7 +40,7 @@ class PlayGame:
         self.clean_up(1)
         self.clean_up(-1)
         
-        for _ in range(2000):
+        for turn in range(2000):
             
             move = self.p1.get_moves(self.env, self.p1_deck, self.p1_hand, self.p1_discard)
             if move in self.env.card_map.keys():
@@ -56,7 +56,7 @@ class PlayGame:
             else:
                 self.p1_move_list.append('bot bad or no return')
             if self.env.check_win():
-                return self.declare_winner()
+                return [self.declare_winner(), turn]
             self.clean_up(1)
                 
             move = self.p2.get_moves(self.env, self.p2_deck, self.p2_hand, self.p2_discard)
@@ -73,11 +73,11 @@ class PlayGame:
             else:
                 self.p1_move_list.append('bot bad or no return')
             if self.env.check_win():
-                return self.declare_winner()
+                return [self.declare_winner(), turn]
             self.clean_up(-1)
 
         print('Time Out')
-        return self.declare_winner()
+        return [self.declare_winner(), None]
                        
     def clean_up(self, player):
 

@@ -5,25 +5,37 @@
 import random
 import Environment
 import ExampleBot
+import TomBot
 import PlayGame
 
 iterations = 1000
 score = [0, 0]
-bot1 = ExampleBot.ExampleBot()
-bot2 = ExampleBot.ExampleBot()
+avg_turn_win = [0,0]
+bot1 = TomBot.TomBot()
+bot2 = TomBot.TomBot()
 for i in range(iterations):
     x = PlayGame.PlayGame(bot1, bot2)
     x = x.play_game()
-    if x == 1:
+    if x[0] == 1:
         score[0] += 1
+        if x[1]:
+        	avg_turn_win[0] += x[1]
     else:
     	score[1] += 1
+    	if x[1]:
+    		avg_turn_win[1] += x[1]
+if (score[0] > 0):
+	avg_turn_win[0] /= score[0]
+if (score[1] > 0):
+	avg_turn_win[1] /= score[1]
 
 print(score)
         
 if score[1] > score[0]:
     print('{} wins! with {}% WR.'.format(bot2.name, score[1]*100/iterations))
+    print('{} average turn to win: {}'.format(bot2.name, avg_turn_win[1]))
 elif score[1] < score[0]:
     print('{} wins! {}% WR.'.format(bot1.name, score[0]*100/iterations))
+    print('{} average turn to win: {}'.format(bot1.name, avg_turn_win[0]))
 else:
     print('Tie!')
