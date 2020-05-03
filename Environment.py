@@ -19,7 +19,7 @@ class Environment:
     def check_win(self):
         # Returns True if the game is over, and False otherwise
         
-        if self.card_map['province'] == 0:
+        if self.card_map['province']['supply'] == 0:
             return True
         else:
             count = 0

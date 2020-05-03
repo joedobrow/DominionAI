@@ -5,19 +5,20 @@
 import random
 import Environment
 import ExampleBot
+import MoneyBot
 import PlayGame
 
 iterations = 1
 score = [0, 0]
-bot1 = ExampleBot.ExampleBot()
-bot2 = ExampleBot.ExampleBot()
+bot1 = MoneyBot.MoneyBot()
+bot2 = MoneyBot.MoneyBot()
 for i in range(iterations):
-    x = PlayGame.PlayGame(bot1, bot2, verbose=3)
+    x = PlayGame.PlayGame(bot1, bot2, verbose=0)
     result = x.play_game()
-    if result == 1:
+    if result[0] == 1:
         score[0] += 1
     else:
-    	score[1] += 1
+        score[1] += 1
 
 print('\n{}'.format(score))
         
