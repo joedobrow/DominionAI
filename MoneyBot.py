@@ -10,11 +10,6 @@ class MoneyBot:
 		self.money = hand['copper'] + hand['silver']*2 + hand['gold']*3
 		self.card_map = env.card_map
 
-		piles_out = 0
-		for pile in self.card_map:
-			if self.card_map[pile]['supply'] == 0:
-				piles_out += 1
-
 		if self.can_buy_province():
 			return 'province'
 
@@ -23,6 +18,10 @@ class MoneyBot:
 			if choice != -1:
 				return choice
 
+		piles_out = 0
+		for pile in self.card_map:
+			if self.card_map[pile]['supply'] == 0:
+				piles_out += 1
 		if piles_out == 2:
 			choice = self.buy_best_vp_card(False)
 			if choice != -1:
@@ -35,10 +34,9 @@ class MoneyBot:
 				best_money_choice['name'] = card
 				best_money_choice['avg_coin'] = new_avg
 
-
 		return best_money_choice['name']
 
-
+	# select highest vp card available that you can buy. parameterized by whether to consider purchasing estates or not
 	def buy_best_vp_card(self, consider_estate):
 		best = {'name': -1, 'vp': -1}
 		for card in self.card_map:
@@ -49,17 +47,19 @@ class MoneyBot:
 				best['vp'] = self.card_map[card]['vp']
 		return best['name']
 
+	# whether you can buy a province or not
 	def can_buy_province(self):
 		return self.money >= self.card_map['province']['cost']
 
+# STATIC METHODS
 
+# money in an average hand given your full deck
 def average_money_in_total(deck, hand, discard):
 	return ((money_in_object(deck) + money_in_object(discard) + money_in_object(hand)) / num_cards_i_got(deck, hand, discard)) * 5
 
+# money in an average hand give your full deck and the addition of a given card
 def average_money_with_additional_card(deck, hand, discard, potential_card):
 	return ((money_in_object(deck) + money_in_object(discard) + money_in_object(hand) + money_from_card(potential_card)) / (1 + num_cards_i_got(deck, hand, discard))) * 5
-
-
 
 def money_in_object(array):
 	return array['copper'] + array['silver']*2 + array['gold']*3
