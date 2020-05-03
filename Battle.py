@@ -11,12 +11,12 @@ import GUI
 import JoeBot
 #import ReinforcedBot
 
-verbose = 2
+verbose = 0
 p1_avg_turn_win, p2_avg_turn_win = 0, 0
 if verbose > 0:
 	iterations = 1
 else:
-	iterations = 10000
+	iterations = 20000
 score = [0, 0]
 bot1 = JoeBot.JoeBot25()
 bot2 = JoeBot.JoeBot2()
