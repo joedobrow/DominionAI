@@ -5,6 +5,7 @@
 import random
 import Environment
 import ExampleBot
+import MoneyBot
 import PlayGame
 import KellenBot01
 import GUI
