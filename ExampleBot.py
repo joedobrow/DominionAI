@@ -6,7 +6,7 @@ class ExampleBot:
         
         self.name = "RandBot"
     
-    def get_moves(self, env, deck, hand, discard):
+    def get_buys(self, game,):
          
         money = hand['copper'] + hand['silver'] * 2 + hand['gold'] * 3
 
@@ -15,5 +15,9 @@ class ExampleBot:
             if (money >= env.card_map[card]['cost']) and env.card_map[card]['supply'] > 0:
                 moves.append(card)
            
-        move = random.choice(moves)
         return move
+
+    def get_actions(self, env, deck, hand, discard)
+        return get_actions
+
+    def remodel()
