@@ -4,23 +4,22 @@
 
 import random
 import Environment
-import ExampleBot
-import MoneyBot
 import PlayGame
-import KellenBot01
 import GUI
 import JoeBot
-#import ReinforcedBot
+import MoneyBot
+import KellenBot001
+import BigMoney
 
-verbose = 2
+verbose = 0
 p1_avg_turn_win, p2_avg_turn_win = 0, 0
 if verbose > 0:
 	iterations = 1
 else:
 	iterations = 10000
 score = [0, 0]
-bot1 = JoeBot.JoeBot25()
-bot2 = JoeBot.JoeBot2()
+bot1 = JoeBot.JoeBot2()
+bot2 = MoneyBot.MoneyBot()
 for i in range(iterations):
     x = PlayGame.PlayGame(bot1, bot2, verbose=verbose)
     result = x.play_game()
@@ -58,6 +57,8 @@ else:
     print('Tie!')
 print(bot1.name, 'average turn win:', p1_avg_turn_win)
 print(bot2.name, 'average turn win:', p2_avg_turn_win)
+print(bot1.name, 'Total runtime:', p1_avg_turn_win)
+print(bot2.name, 'Total runtime:', p2_avg_turn_win)
 if x.verbose > 1:
 	print('\nRemaining cards:')
 	for card in x.env.card_map.keys():
