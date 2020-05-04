@@ -10,12 +10,15 @@ import JoeBotw2
 
 verbose = 0
 avg_turn_win = [0, 0]
+
 if verbose > 0:
 	iterations = 1
 else:
 	iterations = 1000
 score = [0, 0]
+
 bots = [JoeBotw2.SmithyBot(), JoeBotw2.RemodelBot()]
+
 for i in range(iterations):
     x = PlayGame.PlayGame(bots[0], bots[1], verbose=verbose)
     result = x.play_game()
@@ -58,6 +61,7 @@ else:
     print('Tie!')
 print(bots[0].name, 'average turn win:', avg_turn_win[0])
 print(bots[1].name, 'average turn win:', avg_turn_win[1])
+
 if x.verbose > 1:
 	print('\nRemaining cards:')
 	for card in x.env.card_map.keys():
