@@ -12,193 +12,207 @@ class PlayGame:
         # 1: Display names
         # 2: names and moves
 
-        flip = random.randint(1, 2)
-        self.flip = flip
-        if flip == 1:
-            self.p1 = bot1
-            self.p2 = bot2
+        self.flip = random.randint(0, 1)
+        if self.flip == 0:
+            self.player = [bot1, bot2]
         else:
-            self.p2 = bot1
-            self.p1 = bot2
+            self.player = [bot2, bot1]
             
         self.env = Environment.Environment()
         self.verbose = verbose
-        self.p1_deck, self.p2_deck = {}, {}
-        self.p1_hand, self.p2_hand = {}, {}
-        self.p1_discard, self.p2_discard = {}, {}
-        self.p1_move_list, self.p2_move_list = [], []
-        self.p1_hand_list, self.p2_hand_list = [], []
-        self.bot1_runtime, self.bot2_runtime = 0, 0
-        self.verbose = verbose
+        self.deck = [{}, {}]
+        self.hand = [{}, {}]
+        self.discard = [{}, {}]
+        self.move_list = [[], []]
+        self.hand_list = [[], []]
+        self.runtimes = [0, 0]
+        self.extra_text = ["", ""]
         
         for card in list(self.env.card_map.keys()):
-            self.p1_deck[card], self.p2_deck[card] = 0, 0
-            self.p1_hand[card], self.p2_hand[card] = 0, 0
-            self.p1_discard[card], self.p2_discard[card] = 0, 0
+            self.deck[0][card], self.deck[1][card] = 0, 0
+            self.hand[0][card], self.hand[1][card] = 0, 0
+            self.discard[0][card], self.discard[1][card] = 0, 0
             
-        self.p1_deck['copper'], self.p2_deck['copper'] = 7, 7
-        self.p1_deck['estate'], self.p2_deck['estate'] = 3, 3
+        self.deck[0]['copper'], self.deck[1]['copper'] = 7, 7
+        self.deck[0]['estate'], self.deck[1]['estate'] = 3, 3
         
-        if verbose == 1:
-            print("Player 1: {}".format(self.p1.name))
-            print("Player 2: {}".format(self.p2.name))
+        if self.verbose == 1:
+            print("Player 1: {}".format(self.player[0].name))
+            print("Player 2: {}".format(self.player[1].name))
         
     def play_game(self):
         
+        self.clean_up(0)
         self.clean_up(1)
-        self.clean_up(-1)
         
-        for turn in range(2000):
+        for turn in range(500):
 
-            self.p1_hand_list.append(list(self.p1_hand.values()))
+
+            self.hand_list[0].append(list(self.hand[0].values()))
+            self.coin = 0
             
-            timer = time.time()
+            # ADD CHECK FOR IF THEY HAVE THE ACTIOn
+            self.timer = time.time()
+            action = self.player[0].action(self.env.card_map, self.deck[0], self.hand[0], self.discard[0], 0)
+            self.add_time(0)
+            self.execute_action(action, 0)
+            if self.verbose > 0:
+                action += ' '
+                action += self.extra_text[0]
 
-            move = self.p1.get_moves(self.env, self.p1_deck, self.p1_hand, self.p1_discard)
+            self.timer = time.time()
+            buy = self.player[0].buy(self.env.card_map, self.deck[0], self.hand[0], self.discard[0], self.coin, 0)
+            self.add_time(0)
 
-            if self.flip == 1:
-                self.bot1_runtime += time.time() - timer
-            else:
-                self.bot2_runtime += time.time() - timer
+            for card in self.env.card_map:
+                self.coin += self.hand[0][card] * self.env.card_map[card]['coin']
 
-            coin = 0
-            for card in list(self.p1_hand.keys()):
-                    coin += self.p1_hand[card] * self.env.card_map[card]['coin']
-
-            if move in list(self.env.card_map.keys()):
-                if (self.env.card_map[move]['supply'] > 0) and (coin >= self.env.card_map[move]['cost']):
-                    self.p1_discard[move] += 1
-                    self.env.card_map[move]['supply'] -= 1
-                    self.p1_move_list.append([coin, move])
+            if buy in self.env.card_map:
+                if (self.env.card_map[buy]['supply'] > 0) and (self.coin >= self.env.card_map[buy]['cost']):
+                    self.discard[0][buy] += 1
+                    self.env.card_map[buy]['supply'] -= 1
                 else:
-                    self.p1_move_list.append([coin, 'nobuy'])
+                    buy = 'nobuy'
             else:
-                self.p1_move_list.append([coin, 'nobuy'])
+                buy = 'nobuy'
+            self.move_list[0].append([self.coin, action, buy])
 
             if self.env.check_win():
-                if self.verbose == 2:
-                    if self.flip == 1:
-                        return [self.declare_winner(), turn, self.p1_move_list, self.p2_move_list, self.p1_hand_list, self.p2_hand_list]
-                    else:
-                        return [self.declare_winner(), turn, self.p2_move_list, self.p1_move_list, self.p2_hand_list, self.p1_hand_list]
+                if self.verbose > 0:
+                    return [
+                        self.declare_winner(), 
+                        turn, 
+                        self.move_list[self.flip], 
+                        self.move_list[1 - self.flip], 
+                        self.hand_list[self.flip], 
+                        self.hand_list[1 - self.flip]
+                    ]
+
+                return [self.declare_winner(), turn]
+            self.clean_up(0)
+
+            self.hand_list[1].append(list(self.hand[1].values()))
+            self.coin = 0
+            
+            self.timer = time.time()
+            action = self.player[1].action(self.env.card_map, self.deck[1], self.hand[1], self.discard[1], 1)
+            self.add_time(1)
+            self.execute_action(action, 1)
+            if self.verbose > 0:
+                action += ' '
+                action += self.extra_text[1]
+
+            self.timer = time.time()
+            buy = self.player[1].buy(self.env.card_map, self.deck[1], self.hand[1], self.discard[1], self.coin, 1)
+            self.add_time(1)
+
+            for card in self.env.card_map:
+                self.coin += self.hand[1][card] * self.env.card_map[card]['coin']
+
+            if buy in self.env.card_map:
+                if (self.env.card_map[buy]['supply'] > 0) and (self.coin >= self.env.card_map[buy]['cost']):
+                    self.discard[1][buy] += 1
+                    self.env.card_map[buy]['supply'] -= 1
+                else:
+                    buy = 'nobuy'
+            else:
+                buy = 'nobuy'
+            self.move_list[1].append([self.coin, action, buy])
+
+            if self.env.check_win():
+                if self.verbose > 0 :
+                    return [
+                        self.declare_winner(), 
+                        turn, 
+                        self.move_list[self.flip], 
+                        self.move_list[1 - self.flip], 
+                        self.hand_list[self.flip], 
+                        self.hand_list[1 - self.flip]
+                    ]
 
                 return [self.declare_winner(), turn]
             self.clean_up(1)
 
-            self.p2_hand_list.append(list(self.p2_hand.values()))
-
-            timer = time.time()    
-            move = self.p2.get_moves(self.env, self.p2_deck, self.p2_hand, self.p2_discard)
-            if self.flip == 1:
-                self.bot2_runtime += time.time() - timer
-            else:
-                self.bot1_runtime += time.time() - timer
-
-            coin = 0
-            for card in list(self.p2_hand.keys()):
-                    coin += self.p2_hand[card] * self.env.card_map[card]['coin']
-            if move in list(self.env.card_map.keys()):
-                if (self.env.card_map[move]['supply'] > 0) and (coin >= self.env.card_map[move]['cost']):
-                    self.p2_discard[move] += 1
-                    self.env.card_map[move]['supply'] -= 1
-                    self.p2_move_list.append([coin, move])
-                else:
-                    self.p2_move_list.append([coin, 'nobuy'])
-            else:
-                self.p2_move_list.append([coin, 'nobuy'])
-
-            if self.env.check_win():
-                if self.verbose == 2:
-                    if self.flip == 1:
-                        return [self.declare_winner(), turn, self.p1_move_list, self.p2_move_list, self.p1_hand_list, self.p2_hand_list]
-                    else:
-                        return [self.declare_winner(), turn, self.p2_move_list, self.p1_move_list, self.p2_hand_list, self.p1_hand_list]
-
-                return [self.declare_winner(), turn]
-            self.clean_up(-1)
-
         print('Time Out')
-        if self.verbose > 1:
-            self.watch_game()
         return [self.declare_winner(), turn]
                        
     def clean_up(self, player):
+            
+        for card in self.env.card_map:
+            card_amount = self.hand[player][card]
+            self.discard[player][card] += card_amount
+            self.hand[player][card] -= card_amount
+            
+        self.extra_text[player] = ''
+        self.draw_card(5, player)
 
-        if player == 1:
-            deck, discard, hand = self.p1_deck, self.p1_discard, self.p1_hand
-        else:
-            deck, discard, hand = self.p2_deck, self.p2_discard, self.p2_hand
-            
-        for card in list(self.env.card_map.keys()):
-            card_amount = hand[card]
-            discard[card] += card_amount
-            hand[card] -= card_amount
-            
-        for i in range(5):
-            if sum(deck.values()) < 1:
-                for card in list(self.env.card_map.keys()):
-                    card_amount = discard[card]
-                    discard[card] -= card_amount
-                    deck[card] += card_amount
-            if sum(deck.values()) > 0:
-                draw = random.randint(1, sum(deck.values()))
-                for card in list(self.env.card_map.keys()):
-                    if draw <= deck[card]:
-                        deck[card] -= 1
-                        hand[card] += 1
+    def draw_card(self, cards, player):
+
+        for i in range(cards):
+            if sum(self.deck[player].values()) < 1:
+                for card in self.env.card_map:
+                    card_amount = self.discard[player][card]
+                    self.discard[player][card] -= card_amount
+                    self.deck[player][card] += card_amount
+            else:
+                draw = random.randint(1, sum(self.deck[player].values()))
+                for card in self.env.card_map:
+                    if draw <= self.deck[player][card]:
+                        self.deck[player][card] -= 1
+                        self.hand[player][card] += 1
                         break
-                    draw -= deck[card]
-    
+                    draw -= self.deck[player][card]
+     
     
     def declare_winner(self):
-        p1_score = self.get_vp(1)
-        p2_score = self.get_vp(-1)
+        p1_score = self.get_vp(0)
+        p2_score = self.get_vp(1)
         if (p1_score > p2_score):
-            if self.flip == 1:
-                return 1
-            else:
-                return -1
+            return self.flip
         else:
-            if self.flip == 1:
-                return -1
-            else:
-                return 1
+            return 1 - self.flip
         
     def get_vp(self, player):
         
         vp_total = 0
         
-        if player == 1:
-            for card in list(self.env.card_map.keys()):
-                vp_total += self.p1_deck[card] * self.env.card_map[card]['vp']
-                vp_total += self.p1_discard[card] * self.env.card_map[card]['vp']
-                vp_total += self.p1_hand[card] * self.env.card_map[card]['vp']
-            return vp_total
-        
-        else:
-            for card in list(self.env.card_map.keys()):
-                vp_total += self.p2_deck[card] * self.env.card_map[card]['vp']
-                vp_total += self.p2_discard[card] * self.env.card_map[card]['vp']
-                vp_total += self.p2_hand[card] * self.env.card_map[card]['vp']
-            return vp_total
+        for card in self.env.card_map:
+            vp_total += self.deck[player][card] * self.env.card_map[card]['vp']
+            vp_total += self.discard[player][card] * self.env.card_map[card]['vp']
+            vp_total += self.hand[player][card] * self.env.card_map[card]['vp']
+        return vp_total
 
-    def watch_game(self):
+    def add_time(self, player):
 
-        if self.flip == 1:
-            print('\n{} \t\t\t\t{}\n'.format(self.p1.name, self.p2.name))
-        else:
-            print('\n{}\t\t\t\t{}\n'.format(self.p1.name, self.p2.name))
-        for i in range(len(self.p1_move_list)):
-            time.sleep(1)
-            try:
-                print('{} {} \t\t\t\t{} {}'.format(
-                    self.p1_move_list[i][0], 
-                    self.p1_move_list[i][1],
-                    self.p2_move_list[i][0],
-                    self.p2_move_list[i][1],
-                    )
-                )
-            except:
-                print(self.p1_move_list[i][0], self.p1_move_list[i][1])
+        self.runtimes[player] += time.time() - self.timer
+
+    def execute_action(self, action, player):
+        if action == 'smithy':
+            self.draw_card(3, player)
+
+        elif action == 'moneylender':
+            if self.hand[player]['copper'] > 0:
+                self.hand[player]['copper'] -= 1
+                self.coin += 3
+
+        elif action == 'remodel':
+            self.hand[player]['remodel'] -= 1
+            remodel = self.player[player].remodel(self.env.card_map, self.deck[player], self.hand[player], self.discard[player], player)
+            if (
+                    (self.hand[player][remodel[0]] > 0) and 
+                    (self.hand[player][remodel[1]] > 0) and 
+                    (self.env.card_map[remodel[1]]['supply'] > 0) and
+                    (self.env.card_map[remodel[1]]['cost'] <= self.env.card_map[remodel[0]]['cost'] + 2)
+                ):
+
+                self.hand[player][remodel[0]] -= 1
+                self.discard[player][remodel[1]] += 1
+                self.env.card_map[remodel[1]]['supply'] -= 1
+                self.discard[player]['remodel'] += 1
+
+            if self.verbose > 0:
+                self.extra_text[player] = remodel[0] + ' into ' + remodel[1]
+
+
 
 

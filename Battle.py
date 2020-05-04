@@ -4,60 +4,60 @@
 
 import random
 import Environment
-import ExampleBot
-import MoneyBot
 import PlayGame
-import KellenBot01
 import GUI
-import JoeBot
-#import ReinforcedBot
+import JoeBotw2
 
-verbose = 2
-p1_avg_turn_win, p2_avg_turn_win = 0, 0
+verbose = 0
+avg_turn_win = [0, 0]
 if verbose > 0:
 	iterations = 1
 else:
-	iterations = 10000
+	iterations = 1000
 score = [0, 0]
-bot1 = JoeBot.JoeBot25()
-bot2 = JoeBot.JoeBot2()
+bots = [JoeBotw2.SmithyBot(), JoeBotw2.RemodelBot()]
 for i in range(iterations):
-    x = PlayGame.PlayGame(bot1, bot2, verbose=verbose)
+    x = PlayGame.PlayGame(bots[0], bots[1], verbose=verbose)
     result = x.play_game()
-    if result[0] == 1:
-        score[0] += 1
-        p1_avg_turn_win += result[1]
-    else:
-    	score[1] += 1
-    	p2_avg_turn_win += result[1]
+    score[result[0]] += 1
+    avg_turn_win[result[0]] += result[1]
+
 if score[1] > score[0]:
-	winner_name = bot2.name
+	winner_name = bots[1].name
 elif score[1] < score[0]:
-	winner_name = bot1.name
+	winner_name = bots[0].name
 else:
 	winner_name = 'error'
+
 if verbose == 2:
 	y = GUI.CreateGUI(result[2], result[3], result[4], result[5], bot1.name, bot2.name, winner_name)
+elif verbose == 1:
+	for move in range(len(result[2]) + 1):
+		try:
+			print(result[2][move], result[3][move])
+		except:
+			None
+
 if score[0] > 0:
-	p1_avg_turn_win /= score[0]
+	avg_turn_win[0] /= score[0]
 else:
-	p1_avg_turn_win = 'SHUT OUT'
+	avg_turn_win[0] = 'SHUT OUT'
 if score[1] > 0:
-	p2_avg_turn_win /= score[1]
+	avg_turn_win[1] /= score[1]
 else:
-	p2_avg_turn_win = 'SHUT OUT'
+	avg_turn_win[1] = 'SHUT OUT'
 
 
 print('\n{}'.format(score))
         
 if score[1] > score[0]:
-    print('{} wins! with {}% WR.'.format(bot2.name, score[1]*100/iterations))
+    print('{} wins! with {}% WR.'.format(bots[1].name, score[1]*100/iterations))
 elif score[1] < score[0]:
-    print('{} wins! {}% WR.'.format(bot1.name, score[0]*100/iterations))
+    print('{} wins! {}% WR.'.format(bots[0].name, score[0]*100/iterations))
 else:
     print('Tie!')
-print(bot1.name, 'average turn win:', p1_avg_turn_win)
-print(bot2.name, 'average turn win:', p2_avg_turn_win)
+print(bots[0].name, 'average turn win:', avg_turn_win[0])
+print(bots[1].name, 'average turn win:', avg_turn_win[1])
 if x.verbose > 1:
 	print('\nRemaining cards:')
 	for card in x.env.card_map.keys():
