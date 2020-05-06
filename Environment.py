@@ -26,14 +26,14 @@ class Environment:
     def reset_supply(self):
 
         self.card_map = {
-            'copper': {'cost': 0, 'coin': 1, 'vp': 0, 'types': ['coin'], 'supply': 45},
-            'silver': {'cost': 3, 'coin': 2, 'vp': 0, 'types': ['coin'], 'supply': 30},
-            'gold': {'cost': 6, 'coin': 3, 'vp': 0, 'types': ['coin'], 'supply': 30},
-            'estate': {'cost': 2, 'coin': 0, 'vp': 1, 'types': ['victory'], 'supply': 8},
-            'duchy': {'cost': 5, 'coin': 0, 'vp': 3, 'types': ['victory'], 'supply': 8},
-            'province': {'cost': 8, 'coin': 0, 'vp': 6, 'types': ['victory'], 'supply': 8},
-            'curse': {'cost': 0, 'coin': 0, 'vp': -1, 'types': ['victory'], 'supply': 8},
-            'moneylender': {'cost': 4, 'coin': 0, 'vp': 0, 'types': ['action'], 'supply': 10},
-            'remodel': {'cost': 4, 'coin': 0, 'vp': 0, 'types': ['action'], 'supply': 10},
-            'smithy': {'cost': 4, 'coin': 0, 'vp': 0, 'types': ['action'], 'supply': 10},
+            'copper': {'cost': 0, 'coin': 1, 'vp': 0, 'types': ['coin'], 'supply': 45, 'start_supply': 45},
+            'silver': {'cost': 3, 'coin': 2, 'vp': 0, 'types': ['coin'], 'supply': 30, 'start_supply': 30},
+            'gold': {'cost': 6, 'coin': 3, 'vp': 0, 'types': ['coin'], 'supply': 30, 'start_supply': 30},
+            'estate': {'cost': 2, 'coin': 0, 'vp': 1, 'types': ['victory'], 'supply': 8, 'start_supply': 8},
+            'duchy': {'cost': 5, 'coin': 0, 'vp': 3, 'types': ['victory'], 'supply': 8, 'start_supply': 8},
+            'province': {'cost': 8, 'coin': 0, 'vp': 6, 'types': ['victory'], 'supply': 8, 'start_supply': 8},
+            'curse': {'cost': 0, 'coin': 0, 'vp': -1, 'types': ['victory'], 'supply': 8, 'start_supply': 8},
+            'moneylender': {'cost': 4, 'coin': 0, 'vp': 0, 'types': ['action'], 'supply': 10, 'start_supply': 10},
+            'remodel': {'cost': 4, 'coin': 0, 'vp': 0, 'types': ['action'], 'supply': 10, 'start_supply': 10},
+            'smithy': {'cost': 4, 'coin': 0, 'vp': 0, 'types': ['action'], 'supply': 10, 'start_supply': 10},
         }    
