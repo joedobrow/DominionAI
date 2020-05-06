@@ -17,7 +17,7 @@ else:
 	iterations = 1000
 score = [0, 0]
 
-bots = [JoeBotw2.SmithyBot(), JoeBotw2.RemodelBot()]
+bots = [JoeBotw2.TrainedBot4(), JoeBotw2.TrainedBot5()]
 
 for i in range(iterations):
     x = PlayGame.PlayGame(bots[0], bots[1], verbose=verbose)
