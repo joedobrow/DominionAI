@@ -6,7 +6,7 @@ class BaseBot:
         
         self.name = "BaseBot"
 
-    def action(self, card_map, deck, hand, discard, player):
+    def action(self, card_map, deck, hand, discard, bonus_coin, player):
         # This should return a string of the action card you want to play
         # For example: 'smithy'
         return 'action'
@@ -18,7 +18,7 @@ class BaseBot:
            
         return 'buy'
 
-    def remodel(self, card_map, deck, hand, discard, player):
+    def remodel(self, card_map, deck, hand, discard, bonus_coin, player):
         # this should return an array with the card you want to trash followed by the card you want to gain.
         # For example: ['silver', 'duchy']
         return ['trashed_card', 'gained_card']
