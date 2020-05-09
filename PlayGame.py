@@ -228,8 +228,9 @@ class PlayGame:
                 self.coin += 3
 
         elif action == 'remodel':
-            if self.hand[player]['remodel']:
+            if self.hand[player]['remodel'] > 0:
                 self.hand[player]['remodel'] -= 1
+                self.discard[player]['remodel'] += 1
                 remodel = self.player[player].remodel(self.env.card_map, self.deck[player], self.hand[player], self.discard[player], self.coin, player)
                 # NEED TO PUT IN CHECK FOR LEGAL REMODEL
                 if (remodel[0] in self.env.card_map) and (remodel[1] in self.env.card_map):
@@ -243,6 +244,5 @@ class PlayGame:
                         self.hand[player][remodel[0]] -= 1
                         self.discard[player][remodel[1]] += 1
                         self.env.card_map[remodel[1]]['supply'] -= 1
-                        self.discard[player]['remodel'] += 1
 
                     self.extra_text[player] = remodel[0] + ' into ' + remodel[1]
