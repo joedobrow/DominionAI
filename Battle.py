@@ -6,7 +6,6 @@ import PlayGame
 import GUI
 import JoeBotw2
 import copy
-import pandas as pd
 
 # - - - -  - - - -CHANGE THESE VARIABLES - - - - - - - - -
 # verbose 0: display  score, runtime, average VP, and turn win over multiple games
