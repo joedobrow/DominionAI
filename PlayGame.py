@@ -24,7 +24,7 @@ class PlayGame:
         self.hand_list = [[], []]
         self.bonus_draw_list = [[], []]
         self.runtimes = [0, 0]
-        self.extra_text = ["", ""]
+        self.extra_text = [[], []]
         
         for card in list(self.env.card_map.keys()):
             self.deck[0][card], self.deck[1][card] = 0, 0
@@ -82,7 +82,6 @@ class PlayGame:
             else:
                 buy = 'nobuy'
             self.move_list[0].append([self.coin, action, buy])
-
             if self.env.check_win():
                 to_return = []
                 for i in self.declare_winner():
@@ -142,8 +141,8 @@ class PlayGame:
             else:
                 buy = 'nobuy'
             self.move_list[1].append([self.coin, action, buy])
-
             if self.env.check_win():
+                print('XXX', self.extra_text)
                 to_return = []
                 for i in self.declare_winner():
                     to_return.append(i)
@@ -165,7 +164,24 @@ class PlayGame:
             self.clean_up(1)
 
         print('Time Out')
-        return [self.declare_winner(), turn]
+        to_return = []
+        for i in self.declare_winner():
+            to_return.append(i)
+        for i in [
+            turn,
+            self.move_list[self.flip], 
+            self.move_list[1 - self.flip], 
+            self.hand_list[self.flip], 
+            self.hand_list[1 - self.flip],
+            self.runtimes[self.flip],
+            self.runtimes[1 - self.flip],
+            self.extra_text[self.flip],
+            self.extra_text[1 - self.flip],
+            self.bonus_draw_list[self.flip],
+            self.bonus_draw_list[1 - self.flip]
+        ]:
+            to_return.append(i)
+        return to_return
                        
     def clean_up(self, player):
             
@@ -174,7 +190,6 @@ class PlayGame:
             self.discard[player][card] += card_amount
             self.hand[player][card] -= card_amount
             
-        self.extra_text[player] = ''
         self.draw_card(5, player)
 
     def draw_card(self, cards, player):
@@ -199,9 +214,9 @@ class PlayGame:
         p1_score = self.get_vp(0)
         p2_score = self.get_vp(1)
         if (p1_score > p2_score):
-            return [self.flip, 0, p1_score, p2_score]
+            return [self.flip, self.flip, p1_score, p2_score]
         else:
-            return [1 - self.flip, 1, p2_score, p1_score]
+            return [1 - self.flip, self.flip, p2_score, p1_score]
         
     def get_vp(self, player):
         
@@ -220,7 +235,7 @@ class PlayGame:
     def execute_action(self, action, player):
         if action == 'smithy':
             self.draw_card(3, player)
-            self.bonus_draw_list[player].append(self.hand[player])
+            self.bonus_draw_list[player].append(copy.deepcopy(self.hand[player]))
 
         elif action == 'moneylender':
             if self.hand[player]['copper'] > 0:
@@ -245,4 +260,5 @@ class PlayGame:
                         self.discard[player][remodel[1]] += 1
                         self.env.card_map[remodel[1]]['supply'] -= 1
 
-                    self.extra_text[player] = remodel[0] + ' into ' + remodel[1]
+                    self.extra_text[player].append([remodel[0], remodel[1]])
+

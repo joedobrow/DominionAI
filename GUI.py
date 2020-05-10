@@ -4,21 +4,34 @@ import time
 
 class CreateGUI:
 
-	def __init__(self, p1_move_list, p2_move_list, p1_hand_list, p2_hand_list, p1_extra_draw, p2_extra_draw, bot1_name, bot2_name, winner):
+	def __init__(
+			self, 
+			p1_move_list, 
+			p2_move_list, 
+			p1_hand_list, 
+			p2_hand_list, 
+			p1_extra_draw, 
+			p2_extra_draw,
+			p1_remodel_text,
+			p2_remodel_text,
+			bot1_name, 
+			bot2_name,
+			winner):
 
-		print('mMOVELIST', p2_move_list)
-		print('HANDLIST', p2_hand_list)
 		self.iter = 0
 		self.supply = [45, 30, 30, 8, 8, 8, 10, 10, 10, 10]
 		self.hands = [[-1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1]]
 		self.winner = winner
 
-		self.move = [[0, 'none', 'copper'], [0, 'none','copper']]
+		self.move = [[0, 'none', 'none'], [0, 'none','none']]
 		self.move_list = [p1_move_list, p2_move_list]
 		self.hand_list = [p1_hand_list, p2_hand_list]
 		self.extra_hand_list = [p1_extra_draw, p2_extra_draw]
 		self.extra_i = [0, 0]
 		self.bot_name = [bot1_name, bot2_name]
+		self.remodel_text = [p1_remodel_text, p2_remodel_text]
+		self.rem_i = 0
+		self.is_rem = False
 
 		self.root = Tk()
 		self.canvas = Canvas(self.root, width = 900, height = 900)
@@ -34,7 +47,7 @@ class CreateGUI:
 			'curse',
 			'moneylender',
 			'remodel',
-			'smihty'
+			'smithy'
 		]
 
 		self.img_paths = {
@@ -123,27 +136,20 @@ class CreateGUI:
 			'remodel': purchase_remodel,
 			'smithy': purchase_smithy
 		}
-
 		self.logo = self.create_image('/Users/jdobrow/Code/DominionAI/Card Images/Battle Bots Logo.jpg', 340, 125)
 
 		self.active = True
-		self.move_active()
-		if self.move[0][1] in self.purchase_img:
-			to_p = self.move[0][1]
-		else:
-			to_p  ='none'
-		x = self.canvas.create_image(387, 193, anchor=NW, image=self.purchase_img[to_p])
+		self.create_supply()
+		self.root.after(2500, lambda: self.move_active())
 		self.root.after(300000, lambda: self.canvas.destroy())
 		self.root.mainloop()
 
 	def update(self, hand, moves, player):
-		print(moves)
-		print(hand)
 		new_hand = [0, 0, 0, 0, 0, 0, 0]
 		cards_added = 0
 		j = 0
 		if moves[1] == 'smithy':
-			hand = self.extra_hand_list[player][self.extra_i[player]]
+			hand = list(self.extra_hand_list[player][self.extra_i[player]].values())
 			self.extra_i[player] += 1
 		while cards_added < 7:
 			if hand[j] > 0:
@@ -152,9 +158,9 @@ class CreateGUI:
 				cards_added += 1
 			else:
 				j += 1
-			if j > 7:
-				new_hand[5], new_hand[6] = -1, -1
-				cards_added = 7
+				if j > 9:
+					new_hand[5], new_hand[6] = -1, -1
+					cards_added = 7
 		hand = new_hand
 		for i in range(10):
 			if self.card_names[i] == moves[2]:
@@ -162,9 +168,9 @@ class CreateGUI:
 		if moves[2] not in self.card_names:
 			moves[2] = 'none'
 		if moves[1] not in self.card_names:
-			print(moves[1])
 			moves[1] = 'none'
-		if moves[1] not in ['smithy', 'remodel', 'moneylender']:
+
+		if moves[1] == 'remodel':
 			self.hands[player][0] = hand[0]
 			self.hands[player][1] = hand[1]
 			self.hands[player][2] = hand[2]
@@ -173,6 +179,24 @@ class CreateGUI:
 			self.hands[player][5] = -1
 			self.hands[player][6] = -1
 			self.move[player] = moves
+			self.rem_trash = self.remodel_text[player][self.rem_i][0]
+			self.rem_gain = self.remodel_text[player][self.rem_i][1]
+			print(self.rem_trash)
+			print(self.rem_gain)
+			self.rem_i += 1
+			self.is_rem = True
+
+		elif moves[1] not in ['smithy']:
+			self.hands[player][0] = hand[0]
+			self.hands[player][1] = hand[1]
+			self.hands[player][2] = hand[2]
+			self.hands[player][3] = hand[3]
+			self.hands[player][4] = hand[4]
+			self.hands[player][5] = -1
+			self.hands[player][6] = -1
+			self.move[player] = moves
+			self.is_rem = False
+
 		else:
 			self.hands[player][0] = hand[0]
 			self.hands[player][1] = hand[1]
@@ -182,6 +206,7 @@ class CreateGUI:
 			self.hands[player][5] = hand[5]
 			self.hands[player][6] = hand[6]
 			self.move[player] = moves
+			self.is_rem = False
 
 		self.create_supply()
 
@@ -189,12 +214,12 @@ class CreateGUI:
 	def move_active(self):
 		if self.active:
 			if self.iter % 2 == 0:
-				self.update(self.hand_list[0][self.iter//2], self.move_list[0][self.iter//2], 1)
+				self.update(self.hand_list[0][self.iter//2], self.move_list[0][self.iter//2], 0)
 			else:
-				self.update(self.hand_list[1][self.iter//2], self.move_list[1][self.iter//2], -1)
+				self.update(self.hand_list[1][self.iter//2], self.move_list[1][self.iter//2], 1)
 			self.iter += 1
 		
-			self.root.after(2000, self.move_active)
+			self.root.after(2500, self.move_active)
 
 	def create_image(self, path, w, h):
 		img = Image.open(path)
@@ -208,6 +233,8 @@ class CreateGUI:
 		# Supply
 		canvas.create_text(775, 40, text='Turn ' + str(self.iter), font=('Purisa', 30))
 		canvas.create_text(775, 80, text='Supply', font=('Purisa', 20))
+		canvas.create_text(610, 400, text='Buy', font=('Purisa', 30))
+		canvas.create_text(190, 400, text='Action', font=('Purisa', 30))
 		canvas.create_image(740, 100, anchor=NW, image=self.sup_img['copper'])
 		canvas.create_image(740, 165, anchor=NW, image=self.sup_img['silver'])
 		canvas.create_image(740, 230, anchor=NW, image=self.sup_img['gold'])
@@ -253,10 +280,18 @@ class CreateGUI:
 		canvas.create_image(620, 620, anchor=NW, image=self.hand_img[self.hands[1][6]])
 
 		#p1 purchase
-		self.canvas.create_image(200, 193, anchor=NW, image=self.purchase_img[self.move[0][1]])
-		self.canvas.create_image(387, 193, anchor=NW, image=self.purchase_img[self.move[0][2]])
+		self.canvas.create_image(250, 193, anchor=NW, image=self.purchase_img[self.move[0][1]])
+		self.canvas.create_image(417, 193, anchor=NW, image=self.purchase_img[self.move[0][2]])
 
 		#p2 purchase
-		self.canvas.create_image(200, 407, anchor=NW, image=self.purchase_img[self.move[1][1]])
-		self.canvas.create_image(387, 407, anchor=NW, image=self.purchase_img[self.move[1][2]])
+		self.canvas.create_image(250, 407, anchor=NW, image=self.purchase_img[self.move[1][1]])
+		self.canvas.create_image(417, 407, anchor=NW, image=self.purchase_img[self.move[1][2]])
+
+		if self.is_rem == True:
+			self.canvas.create_text(50, 380, text='Trash:', font=('Purisa', 15))
+			self.canvas.create_text(50, 450, text='Gain:', font=('Purisa', 15))
+			self.canvas.create_image(80, 350, anchor=NW, image=self.sup_img[self.rem_trash])
+			self.canvas.create_image(80, 420, anchor=NW, image=self.sup_img[self.rem_gain])
+
+
 

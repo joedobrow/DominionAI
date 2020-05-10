@@ -14,7 +14,7 @@ import copy
 
 verbose = 2
 num_games = 5000
-bots = [JoeBotw2.AdHocStrat(), JoeBotw2.AdHocStrat()]
+bots = [JoeBotw2.RemodelBot(), JoeBotw2.SmithyBot()]
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -61,18 +61,13 @@ for i in range(iterations):
 	result = x.play_game()
 	score[result[0]] += 1
 	avg_turn_win[result[0]] += result[4]
-	if verbose == 1:
-		rem, rem2 = result[11].split(), result[12].split()
-		if len(rem) > 0:
-			remodel_trash[0][rem[0]] += 1
-			remodel_gain[0][rem[2]] += 1
-		if len(rem2) > 0:
-			remodel_trash[1][rem2[0]] += 1
-			remodel_gain[1][rem2[2]] += 1
+	print('ABC', result[11])
+	print('DCE', result[12])
 	avg_vp[result[0]] += result[2]
 	avg_vp[1 - result[0]] += result[3]
 	runtime[0] += result[9]
 	runtime[1] += result[10]
+
 
 
 # RESULT KEY:
@@ -93,7 +88,19 @@ for i in range(iterations):
 # 14 - handlist post smithy bot1
 
 if verbose == 2:
-	y = GUI.CreateGUI(result[5], result[6], result[7], result[8], result[13], result[14], bots[0].name, bots[1].name, bots[result[0]].name)
+	y = GUI.CreateGUI(
+			result[5], 
+			result[6], 
+			result[7], 
+			result[8], 
+			result[13], 
+			result[14], 
+			result[11], 
+			result[12], 
+			bots[0].name, 
+			bots[1].name, 
+			bots[result[0]].name
+	)
 
 if verbose == 1:
 	print('\n\t\tMOVE LIST:')
