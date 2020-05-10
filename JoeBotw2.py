@@ -102,23 +102,43 @@ class SmithyBot(BaseBot.BaseBot):
 		if coin >= 8:
 			return 'province'
 		elif coin in [6, 7]:
-			return 'gold'
+			return 'smithy'
 		elif coin in  [5, 4]:
 			if self.get_num_actions_in_deck(card_map, deck, hand, discard) < 1:
 				return 'smithy'
 			else:
 				return 'silver'
 		elif coin == 3:
-			return 'silver'
+			return 'estate'
 		else:
 			return 'nobuy'
 
-	def action(self, card_map, deck, hand, discard, player):
+	def action(self, card_map, deck, hand, discard, bonus_coin, player):
 
 		if hand['smithy'] > 0:
 			return 'smithy'
 		else:
 			return 'noaction'
+
+class CopperBot(BaseBot.BaseBot):
+
+	def __init__ (self):
+
+		self.name = 'CopperBot'
+
+	def buy(self, card_map, deck, hand, discard, bonus_coin, player):
+
+		return 'copper'
+
+class CurseBot(BaseBot.BaseBot):
+
+	def __init__ (self):
+
+		self.name = 'CurseBot'
+
+	def buy(self, card_map, deck, hand, discard, bonus_coin, player):
+
+		return 'curse'
 
 class MoneylenderBot(BaseBot.BaseBot):
 
@@ -147,7 +167,7 @@ class MoneylenderBot(BaseBot.BaseBot):
 		else:
 			return 'nobuy'
 
-	def action(self, card_map, deck, hand, discard, player):
+	def action(self, card_map, deck, hand, discard, bonus_coin, player):
 
 		if hand['moneylender'] > 0:
 			return 'moneylender'
@@ -182,23 +202,23 @@ class RemodelBot(BaseBot.BaseBot):
 		else:
 			return 'nobuy'
 
-	def action(self, card_map, deck, hand, discard, player):
+	def action(self, card_map, deck, hand, discard, bonus_coin, player):
 
 		if hand['remodel'] > 0:
 			return 'remodel'
 		else:
 			return 'noaction'
 
-	def remodel(self, card_map, deck, hand, discard, player):
+	def remodel(self, card_map, deck, hand, discard, bonus_coin, player):
 
 		priority_list = {
-			'remodel' : 'gold', 
 			'moneylender': 'gold',
 			'smithy': 'gold', 
 			'copper' : 'estate', 
 			'estate': 'remodel', 
 			'silver': 'duchy',
-			'gold': 'province'
+			'gold': 'province',
+			'remodel' : 'gold', 
 		}
 
 
