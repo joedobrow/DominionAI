@@ -11,3 +11,7 @@ Rules for the bots: They must be a class with an __init__ method that declares a
 KellenBot001 utilized duchy dancing and extensive ad hoc logic using if statements to edge out the win over JoeBot in week 1! More complex bots did worse this week.
 
 <h3>Week 2 5/10/2020: Remodel, Smithy, Moneylender</h3.
+1st Place: Joe with AdHocStrat8
+2nd Place: Kellen with Kellenbot002
+
+AdHocStrat8 only bought smithy, usually 2-3 in a game, and utilized priority lists based on a simple function of 'provinces remaining', 'average coin' and 'number actions.' Kellens bot was close, jack tried moneylender but it wasn't good enough, and tom's bot prioritzed silvers over gold...He blamed it on bugs in joe's code.
