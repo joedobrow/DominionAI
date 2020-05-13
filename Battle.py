@@ -4,7 +4,7 @@ import random
 import Environment
 import PlayGame
 import GUI
-import JoeBotw2
+import JoeBotW3
 import copy
 
 # - - - -  - - - -CHANGE THESE VARIABLES - - - - - - - - -
@@ -12,9 +12,10 @@ import copy
 # verbose 1: display all of the moves for 1 game
 # verbose 2: GUI animation of the game
 
-verbose = 2
-num_games = 5000
-bots = [JoeBotw2.RemodelBot(), JoeBotw2.SmithyBot()]
+verbose = 0
+num_games = 500
+
+bots = [JoeBotW3.BigMoney(), JoeBotW3.ChapelBot()]
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -27,9 +28,12 @@ cards = {
 	'duchy' : 0,
 	'province' : 0,
 	'curse' : 0,
+	'chapel': 0,
+	'gardens': 0,
 	'moneylender' : 0,
 	'remodel' : 0,
-	'smithy' : 0
+	'village' : 0,
+	'witch': 0
 }
 avg_turn_win = [0, 0]
 score = [0, 0]
@@ -61,8 +65,6 @@ for i in range(iterations):
 	result = x.play_game()
 	score[result[0]] += 1
 	avg_turn_win[result[0]] += result[4]
-	print('ABC', result[11])
-	print('DCE', result[12])
 	avg_vp[result[0]] += result[2]
 	avg_vp[1 - result[0]] += result[3]
 	runtime[0] += result[9]

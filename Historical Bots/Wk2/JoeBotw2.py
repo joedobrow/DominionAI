@@ -648,7 +648,7 @@ class SimulationBot2(BaseBot.BaseBot):
 
 		for card in legal_buys:
 
-			for i in range(41):
+			for i in range(81):
 				self.reset_simulation(
 						copy.deepcopy(card_map), 
 						copy.deepcopy(deck), 
@@ -665,7 +665,7 @@ class SimulationBot2(BaseBot.BaseBot):
 
 		return 'nobuy'
 
-	def action(self, card_map, deck, hand, discard, player):
+	def action(self, card_map, deck, hand, discard, bonus_coin, player):
 		if hand['moneylender'] > 0:
 			return 'moneylender'
 		else:
@@ -959,6 +959,210 @@ class AdHocStrat5(BaseBot.BaseBot):
 			return priority_list[i]
 		else:
 			return ['none', 'none']
+
+class AdHocStrat6(BaseBot.BaseBot):
+
+	# Assumes other 2 actions are not playable.
+
+	def __init__ (self, parameters):
+
+		# provinces, actions, avg_coin, biases
+
+		self.name = 'Ad hoc strat 6'
+		self.parameters = parameters
+
+	def buy (self, card_map, deck, hand, discard, bonus_coin, player):
+
+		coin = self.get_coin(card_map, hand, bonus_coin)
+		provinces = card_map['province']['supply']
+		num_action = 0
+		for card in card_map:
+			if 'action' in card_map[card]['types']:
+				num_action += hand['smithy'] + deck['smithy'] + discard['smithy']
+		num_cards = sum(hand.values()) + sum(deck.values()) + sum(discard.values())
+		total_coin = 0
+		for card in card_map:
+			total_coin += (hand[card] + discard[card] + deck[card]) * card_map[card]['coin']
+		average_coin = total_coin/num_cards
+
+
+		priority_list = {}
+
+		parameters = self.parameters
+		priority_list = []
+		# provinces remaining, num_actions, average_coin
+		cards = ['silver', 'gold', 'smithy','estate', 'duchy', 'province', 'nobuy']
+		for card in range(len(cards)):
+			priority_list.append(parameters[2][card] + provinces * parameters[0][card] + average_coin * parameters[1][card])
+		new_list = [0] * len(cards)
+		for card in range(len(priority_list)):
+			if cards[card] != 'nobuy':
+				if (coin >= card_map[cards[card]]['cost']) and (card_map[cards[card]]['supply'] > 0):
+					new_list[card] = priority_list[card]
+				else:
+					new_list[card] = -9999
+		for card in range(len(new_list)):
+			if new_list[card] == max(new_list):
+				return cards[card]
+
+
+		return 'nobuy'
+
+	def action(self, card_map, deck, hand, discard, bonus_coin, player):
+		if hand['smithy'] > 0:
+			return 'smithy'
+		return 'noaction'
+
+class AdHocStrat7(BaseBot.BaseBot):
+
+	def __init__ (self):
+
+		self.name = 'Ad hoc strat 7'
+
+	def buy (self, card_map, deck, hand, discard, bonus_coin, player):
+
+		coin = self.get_coin(card_map, hand, bonus_coin)
+		provinces_remaining = card_map['province']['supply']
+		num_gold = hand['gold'] + deck['gold'] + discard['gold']
+		num_action = hand['smithy'] + deck['smithy'] + discard['smithy']
+		num_cards = sum(hand.values()) + sum(deck.values()) + sum(discard.values())
+		total_coin = 0
+		opp_vp = 6
+		my_vp = 0
+		for card in card_map:
+			opp_vp += (card_map[card]['start_supply'] - card_map[card]['supply'] - discard[card] - deck[card] - hand[card]) * card_map[card]['vp']
+			my_vp += (discard[card] + deck[card] + hand[card]) * card_map[card]['vp']
+			total_coin += (hand[card] + discard[card] + deck[card]) * card_map[card]['coin']
+		average_coin = total_coin/(sum(hand.values()) + sum(deck.values()) + sum(discard.values()))
+		priority_list = {}
+
+		if (provinces_remaining == 2) and (average_coin > 1):
+
+
+			if my_vp > opp_vp:
+				priority_list = ['province', 'duchy', 'estate', 'gold', 'silver']
+			elif my_vp == opp_vp:
+				if player == 0:
+					priority_list = ['province', 'duchy', 'estate', 'gold', 'silver']
+				else:
+					priority_list = ['duchy', 'estate', 'province', 'gold', 'silver']
+			elif (my_vp + 1 == opp_vp):
+				if player == 0:
+					priority_list = ['duchy', 'estate', 'province', 'gold', 'silver']
+				else:
+					priority_list = ['duchy', 'province', 'gold', 'estate', 'silver']
+			elif (my_vp + 2 <= opp_vp):
+				priority_list = ['duchy', 'province', 'gold', 'estate', 'silver']
+			elif my_vp + 3 <= opp_vp and player == 0:
+				priority_list = ['duchy', 'province', 'gold', 'silver']
+			else:
+				priority_list = ['province', 'duchy', 'estate', 'gold', 'silver']
+
+			for card in priority_list:
+				if (card_map[card]['cost'] <= coin) and (card_map[card]['supply'] > 0):
+					#print(provinces_remaining, average_coin, card, my_vp, opp_vp)
+					return card
+		elif provinces_remaining == 1:
+
+			if my_vp > opp_vp - 6:
+				priority_list = ['province', 'duchy', 'estate', 'gold', 'silver']
+			elif my_vp == opp_vp - 6:
+				if player == 0:
+					priority_list = ['province', 'duchy', 'estate', 'gold', 'silver']
+				else:
+					priority_list = ['duchy', 'estate', 'gold', 'silver']
+			else:
+				priority_list = ['duchy', 'estate', 'gold', 'silver']
+
+			for card in priority_list:
+				if (card_map[card]['cost'] <= coin) and (card_map[card]['supply'] > 0):
+					return card
+
+		else:
+
+			for card in card_map:
+				if (
+					card in ['silver', 'gold', 'duchy', 'province', 'smithy', 'estate'] and
+					card_map[card]['cost'] <= coin and
+					card_map[card]['supply'] > 0
+				):
+					priority_list[card] = 0
+
+			priority_list['silver'] = provinces_remaining + 2.01
+			priority_list['gold'] = provinces_remaining + 3.01
+			priority_list['smithy'] = provinces_remaining + average_coin * 3 - num_action*1.1
+			priority_list['province'] = (17 - provinces_remaining) + average_coin*2
+			priority_list['duchy'] = 13 - provinces_remaining
+			priority_list['estate'] = 6.5 - provinces_remaining
+			priority_list['nobuy'] = provinces_remaining - 2.02
+
+
+			for card in priority_list:
+				if card != 'nobuy':
+					if (card_map[card]['cost'] > coin) or (card_map[card]['supply'] == 0):
+						priority_list[card] = -1
+			for card in priority_list:
+				if priority_list[card] == max(priority_list.values()):
+					return card
+
+
+		return 'nobuy'
+	def action(self, card_map, deck, hand, discard, bonus_coin, player):
+		if hand['smithy'] > 0:
+			return 'smithy'
+		else:
+			return 'noaction'
+
+class AdHocStrat8(BaseBot.BaseBot):
+
+	def __init__ (self):
+
+		self.name = 'Ad hoc strat 8'
+
+	def buy (self, card_map, deck, hand, discard, bonus_coin, player):
+
+		coin = self.get_coin(card_map, hand, bonus_coin)
+		provinces_remaining = card_map['province']['supply']
+		num_action = hand['smithy'] + deck['smithy'] + discard['smithy']
+		num_cards = sum(hand.values()) + sum(deck.values()) + sum(discard.values())
+		total_coin = 0
+		for card in card_map:
+			total_coin += (hand[card] + discard[card] + deck[card]) * card_map[card]['coin']
+		average_coin = total_coin/(sum(hand.values()) + sum(deck.values()) + sum(discard.values()))
+		priority_list = {}
+
+		for card in card_map:
+			if (
+				card in ['silver', 'gold', 'duchy', 'province', 'smithy', 'estate'] and
+				card_map[card]['cost'] <= coin and
+				card_map[card]['supply'] > 0
+			):
+				priority_list[card] = 0
+
+		priority_list['silver'] = provinces_remaining + 2.01
+		priority_list['gold'] = provinces_remaining + 3.01
+		priority_list['smithy'] = provinces_remaining + average_coin * 3 - num_action*1.1
+		priority_list['province'] = (17 - provinces_remaining) + average_coin*2
+		priority_list['duchy'] = 13 - provinces_remaining
+		priority_list['estate'] = 6.5 - provinces_remaining
+		priority_list['nobuy'] = provinces_remaining - 2.02
+
+
+		for card in priority_list:
+			if card != 'nobuy':
+				if (card_map[card]['cost'] > coin) or (card_map[card]['supply'] == 0):
+					priority_list[card] = -1
+		for card in priority_list:
+			if priority_list[card] == max(priority_list.values()):
+				return card
+
+
+		return 'nobuy'
+	def action(self, card_map, deck, hand, discard, bonus_coin, player):
+		if hand['smithy'] > 0:
+			return 'smithy'
+		else:
+			return 'noaction'
 
 	# joes code
 #	for j in bots[1].data:

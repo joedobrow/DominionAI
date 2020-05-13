@@ -181,8 +181,6 @@ class CreateGUI:
 			self.move[player] = moves
 			self.rem_trash = self.remodel_text[player][self.rem_i][0]
 			self.rem_gain = self.remodel_text[player][self.rem_i][1]
-			print(self.rem_trash)
-			print(self.rem_gain)
 			self.rem_i += 1
 			self.is_rem = True
 
@@ -231,7 +229,7 @@ class CreateGUI:
 		canvas.delete("all")
 
 		# Supply
-		canvas.create_text(775, 40, text='Turn ' + str(self.iter), font=('Purisa', 30))
+		canvas.create_text(775, 40, text='Turn ' + str(self.iter//2 + 1), font=('Purisa', 30))
 		canvas.create_text(775, 80, text='Supply', font=('Purisa', 20))
 		canvas.create_text(610, 400, text='Buy', font=('Purisa', 30))
 		canvas.create_text(190, 400, text='Action', font=('Purisa', 30))
