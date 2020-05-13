@@ -15,7 +15,7 @@ import copy
 verbose = 0
 num_games = 500
 
-bots = [JoeBotW3.BigMoney(), JoeBotW3.ChapelBot()]
+bots = [JoeBotW3.BigMoney(parameters = [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]), JoeBotW3.BigMoney([[-10.0, -3.333333333333333, -10.0, 3.333333333333334, 6.666666666666668, -3.333333333333333], [-10.0, -3.333333333333333, 3.333333333333334, 3.333333333333334, -6.666666666666666, 3.333333333333334]])]
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -61,7 +61,7 @@ for i in range(iterations):
 	if (i%(max(iterations // 10, 1)) == 0):
 		print('{} out of {} epochs completed, score: {}'.format(i, iterations, score))
 
-	x = PlayGame.PlayGame(bots[0], bots[1])
+	x = PlayGame.PlayGame(bots[0], bots[1], verbose=verbose)
 	result = x.play_game()
 	score[result[0]] += 1
 	avg_turn_win[result[0]] += result[4]

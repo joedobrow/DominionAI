@@ -5,7 +5,7 @@ import copy
 
 class PlayGame:
     
-    def __init__(self, bot1, bot2):
+    def __init__(self, bot1, bot2, verbose = 0):
         
         # Determine player1 and player2. Note: Player 1 loses a victory point tie.
         
@@ -28,6 +28,7 @@ class PlayGame:
         self.extra_text = [[], []]
         self.actions = [1, 1]
         self.trash = {}
+        self.verbose = verbose
         
         for card in list(self.env.card_map.keys()):
             self.deck[0][card], self.deck[1][card] = 0, 0
@@ -44,151 +45,114 @@ class PlayGame:
         self.clean_up(0)
         self.clean_up(1)
 
-        
-        for turn in range(500):
+        for turn in range(100):
+
+            for p in range(2):
+
+                if self.verbose > 0:
+                    vp = 0
+                    for card in self.env.card_map:
+                        vp += (self.hand[p][card] + self.discard[p][card] + self.deck[p][card]) * self.env.card_map[card]['vp']
+                    print('\n       {}'.format(self.player[p].name), 'Turn:', turn + 1, 'VP:', vp)
+                    hand_to_print = []
+                    for card in self.hand[p]:
+                        for i in range(self.hand[p][card]):
+                            hand_to_print.append(card)
+                    if len(hand_to_print) < 5:
+                        print(self.hand[p])
+                        print(self.discard[p])
+                        print(self.deck[p])
+                    print(hand_to_print)
 
 
-            self.hand_list[0].append(list(self.hand[0].values()))
-            self.coin = 0
-            
-            while self.actions[0] > 0:
+                self.hand_list[p].append(list(self.hand[p].values()))
+                self.coin = 0
+                
+                while self.actions[p] > 0:
+                    self.timer = time.time()
+                    action = self.player[p].action(
+                            copy.deepcopy(self.env.card_map), 
+                            copy.deepcopy(self.deck[p]), 
+                            copy.deepcopy(self.hand[p]), 
+                            copy.deepcopy(self.discard[p]),
+                            self.coin,
+                            copy.deepcopy(self.actions[p]),
+                            copy.deepcopy(self.in_play[p]),
+                            copy.deepcopy(self.trash),
+                            p
+                    )
+                    self.add_time(p)
+
+                    if action in self.env.card_map:
+                        if self.hand[p][action] > 0:
+                            self.execute_action(action, p)
+                        else:
+                            action = 'none'
+                    else:
+                        action = 'none'
+                    self.actions[p] -= 1
+
+                    if self.verbose > 0:
+                            print('Action:', action)
+                            if action in ['chapel', 'remodel', 'village', 'witch', 'moneylender']:
+                                hand_to_print = []
+                                for card in self.hand[p]:
+                                    for i in range(self.hand[p][card]):
+                                        hand_to_print.append(card)
+                                print(hand_to_print)
+
                 self.timer = time.time()
-                action = self.player[0].action(
+                buy = self.player[p].buy(
                         copy.deepcopy(self.env.card_map), 
-                        copy.deepcopy(self.deck[0]), 
-                        copy.deepcopy(self.hand[0]), 
-                        copy.deepcopy(self.discard[0]),
-                        self.coin,
-                        copy.deepcopy(self.actions[0]),
-                        copy.deepcopy(self.in_play[0]),
+                        copy.deepcopy(self.deck[p]), 
+                        copy.deepcopy(self.hand[p]), 
+                        copy.deepcopy(self.discard[p]), 
+                        copy.copy(self.coin),
+                        copy.deepcopy(self.actions[p]),
+                        copy.deepcopy(self.in_play[p]),
                         copy.deepcopy(self.trash),
-                        0
+                        p
                 )
-                self.add_time(0)
+                self.add_time(p)
 
-                if action in self.env.card_map:
-                    if self.hand[0][action] > 0:
-                        self.execute_action(action, 0)
-                self.actions[0] -= 1
+                for card in self.env.card_map:
+                    self.coin += self.hand[p][card] * self.env.card_map[card]['coin']
 
-            self.timer = time.time()
-            buy = self.player[0].buy(
-                    copy.deepcopy(self.env.card_map), 
-                    copy.deepcopy(self.deck[0]), 
-                    copy.deepcopy(self.hand[0]), 
-                    copy.deepcopy(self.discard[0]), 
-                    copy.copy(self.coin),
-                    copy.deepcopy(self.actions[0]),
-                    copy.deepcopy(self.in_play[0]),
-                    copy.deepcopy(self.trash),
-                    0
-            )
-            self.add_time(0)
-
-            for card in self.env.card_map:
-                self.coin += self.hand[0][card] * self.env.card_map[card]['coin']
-
-            if buy in self.env.card_map:
-                if (self.env.card_map[buy]['supply'] > 0) and (self.coin >= self.env.card_map[buy]['cost']):
-                    self.discard[0][buy] += 1
-                    self.env.card_map[buy]['supply'] -= 1
+                if buy in self.env.card_map:
+                    if (self.env.card_map[buy]['supply'] > p) and (self.coin >= self.env.card_map[buy]['cost']):
+                        self.discard[p][buy] += 1
+                        self.env.card_map[buy]['supply'] -= 1
+                    else:
+                        buy = 'none'
                 else:
-                    buy = 'nobuy'
-            else:
-                buy = 'nobuy'
-            self.move_list[0].append([self.coin, action, buy])
+                    buy = 'none'
+                if self.verbose > 0:
+                    print('Buy:', buy)
 
-            if self.env.check_win():
-                to_return = []
-                for i in self.declare_winner():
-                    to_return.append(i)
-                for i in [
-                    turn,
-                    self.move_list[self.flip], 
-                    self.move_list[1 - self.flip], 
-                    self.hand_list[self.flip], 
-                    self.hand_list[1 - self.flip],
-                    self.runtimes[self.flip],
-                    self.runtimes[1 - self.flip],
-                    self.extra_text[self.flip],
-                    self.extra_text[1 - self.flip],
-                    self.bonus_draw_list[self.flip],
-                    self.bonus_draw_list[1 - self.flip]
-                ]:
-                    to_return.append(i)
-                return to_return
-            self.clean_up(0)
+                self.move_list[p].append([self.coin, action, buy])
 
-            self.hand_list[1].append(list(self.hand[1].values()))
-            self.coin = 0
+                if self.env.check_win():
+                    to_return = []
+                    for i in self.declare_winner():
+                        to_return.append(i)
+                    for i in [
+                        turn,
+                        self.move_list[self.flip], 
+                        self.move_list[1 - self.flip], 
+                        self.hand_list[self.flip], 
+                        self.hand_list[1 - self.flip],
+                        self.runtimes[self.flip],
+                        self.runtimes[1 - self.flip],
+                        self.extra_text[self.flip],
+                        self.extra_text[1 - self.flip],
+                        self.bonus_draw_list[self.flip],
+                        self.bonus_draw_list[1 - self.flip]
+                    ]:
+                        to_return.append(i)
+                    return to_return
+                self.clean_up(p)
 
-            while self.actions[1] > 0:
-            
-                self.timer = time.time()
-                action = self.player[1].action(
-                        copy.deepcopy(self.env.card_map), 
-                        copy.deepcopy(self.deck[1]), 
-                        copy.deepcopy(self.hand[1]), 
-                        copy.deepcopy(self.discard[1]),
-                        self.coin,
-                        copy.deepcopy(self.actions[1]),
-                        copy.deepcopy(self.in_play[1]),
-                        copy.deepcopy(self.trash),
-                        1
-                )            
-                self.add_time(1)
 
-                if action in self.env.card_map:
-                    if self.hand[1][action] > 0:
-                        self.execute_action(action, 1)
-                self.actions[1] -= 1
-
-            self.timer = time.time()
-            buy = self.player[1].buy(
-                    copy.deepcopy(self.env.card_map), 
-                    copy.deepcopy(self.deck[1]), 
-                    copy.deepcopy(self.hand[1]), 
-                    copy.deepcopy(self.discard[1]), 
-                    copy.copy(self.coin),
-                    copy.deepcopy(self.actions[1]),
-                    copy.deepcopy(self.in_play[1]),
-                    copy.deepcopy(self.trash),
-                    1
-            )
-            self.add_time(1)
-
-            for card in self.env.card_map:
-                self.coin += self.hand[1][card] * self.env.card_map[card]['coin']
-
-            if buy in self.env.card_map:
-                if (self.env.card_map[buy]['supply'] > 0) and (self.coin >= self.env.card_map[buy]['cost']):
-                    self.discard[1][buy] += 1
-                    self.env.card_map[buy]['supply'] -= 1
-                else:
-                    buy = 'nobuy'
-            else:
-                buy = 'nobuy'
-            self.move_list[1].append([self.coin, action, buy])
-            if self.env.check_win():
-                to_return = []
-                for i in self.declare_winner():
-                    to_return.append(i)
-                for i in [
-                    turn,
-                    self.move_list[self.flip], 
-                    self.move_list[1 - self.flip], 
-                    self.hand_list[self.flip], 
-                    self.hand_list[1 - self.flip],
-                    self.runtimes[self.flip],
-                    self.runtimes[1 - self.flip],
-                    self.extra_text[self.flip],
-                    self.extra_text[1 - self.flip],
-                    self.bonus_draw_list[self.flip],
-                    self.bonus_draw_list[1 - self.flip]
-                ]:
-                    to_return.append(i)
-                return to_return
-            self.clean_up(1)
 
        # print('Time Out')
         to_return = []
@@ -227,11 +191,12 @@ class PlayGame:
 
         for i in range(cards):
             if sum(self.deck[player].values()) < 1:
-                for card in self.env.card_map:
-                    card_amount = self.discard[player][card]
-                    self.discard[player][card] -= card_amount
-                    self.deck[player][card] += card_amount
-            else:
+                if sum(self.discard[player].values()) > 0:
+                    for card in self.env.card_map:
+                        card_amount = self.discard[player][card]
+                        self.discard[player][card] -= card_amount
+                        self.deck[player][card] += card_amount
+            if sum(self.deck[player].values()) > 0:
                 draw = random.randint(1, sum(self.deck[player].values()))
                 for card in self.env.card_map:
                     if draw <= self.deck[player][card]:
@@ -295,21 +260,21 @@ class PlayGame:
                     player
             )
             self.add_time(player)
-            # NEED TO PUT IN CHECK FOR LEGAL REMODEL
-            if (remodel[0] in self.env.card_map) and (remodel[1] in self.env.card_map):
-                if (
-                        (self.hand[player][remodel[0]] > 0) and 
-                        (self.hand[player][remodel[1]] > 0) and 
-                        (self.env.card_map[remodel[1]]['supply'] > 0) and
-                        (self.env.card_map[remodel[1]]['cost'] <= self.env.card_map[remodel[0]]['cost'] + 2)
+            if remodel:
+                if (remodel[0] in self.env.card_map) and (remodel[1] in self.env.card_map):
+                    if (
+                            (self.hand[player][remodel[0]] > 0) and 
+                            (self.env.card_map[remodel[1]]['supply'] > 0) and
+                            (self.env.card_map[remodel[1]]['cost'] <= self.env.card_map[remodel[0]]['cost'] + 2)
                     ):
+                        if self.verbose > 0:
+                            print('{} remodeled into a {}'.format(remodel[0], remodel[1]))
+                        self.hand[player][remodel[0]] -= 1
+                        self.trash[remodel[0]] += 1
+                        self.discard[player][remodel[1]] += 1
+                        self.env.card_map[remodel[1]]['supply'] -= 1
 
-                    self.hand[player][remodel[0]] -= 1
-                    self.trash[remodel[0]] += 1
-                    self.discard[player][remodel[1]] += 1
-                    self.env.card_map[remodel[1]]['supply'] -= 1
-
-                self.extra_text[player].append([remodel[0], remodel[1]])
+                    self.extra_text[player].append([remodel[0], remodel[1]])
 
         elif action == 'chapel':
             self.hand[player]['chapel'] -= 1
@@ -326,10 +291,15 @@ class PlayGame:
                     copy.deepcopy(self.trash),
                     player
             )
-            for card in chapel:
-                if self.hand[player][card] > 0:
-                    self.hand[player][card] -= 1
-                    self.trash[card] += 1
+            if chapel:
+                for card in chapel:
+                    if self.hand[player][card] > 0:
+                        self.hand[player][card] -= 1
+                        self.trash[card] += 1
+                        if self.verbose > 0:
+                            print('Trashed:', card)
+
+
 
         elif action == 'village':
             self.hand[player]['village'] -= 1
