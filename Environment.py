@@ -26,8 +26,8 @@ class Environment:
     def reset_supply(self):
 
         self.card_map = {
-            'copper': {'cost': 0, 'coin': 1, 'vp': 0, 'types': ['coin'], 'supply': 45, 'start_supply': 45},
-            'silver': {'cost': 3, 'coin': 2, 'vp': 0, 'types': ['coin'], 'supply': 30, 'start_supply': 30},
+            'copper': {'cost': 0, 'coin': 1, 'vp': 0, 'types': ['coin'], 'supply': 46, 'start_supply': 46},
+            'silver': {'cost': 3, 'coin': 2, 'vp': 0, 'types': ['coin'], 'supply': 40, 'start_supply': 40},
             'gold': {'cost': 6, 'coin': 3, 'vp': 0, 'types': ['coin'], 'supply': 30, 'start_supply': 30},
             'estate': {'cost': 2, 'coin': 0, 'vp': 1, 'types': ['victory'], 'supply': 8, 'start_supply': 8},
             'duchy': {'cost': 5, 'coin': 0, 'vp': 3, 'types': ['victory'], 'supply': 8, 'start_supply': 8},
