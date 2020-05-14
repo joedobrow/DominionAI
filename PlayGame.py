@@ -119,7 +119,7 @@ class PlayGame:
                     self.coin += self.hand[p][card] * self.env.card_map[card]['coin']
 
                 if buy in self.env.card_map:
-                    if (self.env.card_map[buy]['supply'] > p) and (self.coin >= self.env.card_map[buy]['cost']):
+                    if (self.env.card_map[buy]['supply'] > 0) and (self.coin >= self.env.card_map[buy]['cost']):
                         self.discard[p][buy] += 1
                         self.env.card_map[buy]['supply'] -= 1
                     else:
