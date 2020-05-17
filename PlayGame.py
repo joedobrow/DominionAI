@@ -305,7 +305,7 @@ class PlayGame:
             self.hand[player]['village'] -= 1
             self.in_play[player]['village'] += 1
             self.draw_card(1, player)
-            self.action[player] += 2
+            self.actions[player] += 2
 
         elif action == 'witch':
             self.hand[player]['witch'] -= 1
@@ -313,4 +313,5 @@ class PlayGame:
             self.draw_card(2, player)
             if self.env.card_map['curse']['supply'] > 0:
                 self.discard[1 - player]['curse'] += 1
+                self.env.card_map['curse']['supply'] -= 1
 

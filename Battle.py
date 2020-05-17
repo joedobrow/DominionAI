@@ -13,10 +13,9 @@ import copy
 # verbose 2: GUI animation of the game
 
 verbose = 1
-num_games = 500
+num_games = 1000
 
-bots = [JoeBotW3.BigMoney([[1, 1, -1, -1, -1, 1], [2, 3, 5, 10, 15, 0]]), JoeBotW3.BigMoney([[-15.5625, -2.4375, -6.0, -30.375, -17.25, -29.3125], [-25.8125, -28.875, -23.4375, -26.875, -16.5625, -26.25]])]
-
+bots = [JoeBotW3.HolyWitch(), JoeBotW3.HolyWitchTest()]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
