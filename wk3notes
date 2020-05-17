@@ -1,7 +1,0 @@
-gardens (and all victory cards) supply is 8
-
-new zones: in_play and trash. Check basebot for correct methods
-
-chapel: return a list of ant length, for ex. ['copper', 'copper', 'copper', 'estate']. If there is an error it will still trash other legal cards in the list.
-
-the helper functions 'get_opponents_vp' from last week was severely bugged in multiple ways. SORRY! Should be fixed now...Fixed other functions and added some
