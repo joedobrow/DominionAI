@@ -53,7 +53,9 @@ class PlayGame:
                     vp = 0
                     for card in self.env.card_map:
                         vp += (self.hand[p][card] + self.discard[p][card] + self.deck[p][card]) * self.env.card_map[card]['vp']
-                    print('\n       {}'.format(self.player[p].name), 'Turn:', turn + 1, 'VP:', vp)
+                    print('\n####  {}'.format(self.player[p].name) + '  ####' + '-' * (30 - len(self.player[p].name)) + '####', 'Turn:', turn + 1, 'VP:', vp, ' ####')
+                    if self.verbose == 2:
+                        time.sleep(1.2)
                     hand_to_print = []
                     for card in self.hand[p]:
                         for i in range(self.hand[p][card]):
@@ -63,6 +65,8 @@ class PlayGame:
                         print(self.discard[p])
                         print(self.deck[p])
                     print(hand_to_print)
+                    if self.verbose == 2:
+                        time.sleep(1.2)
 
 
                 self.hand_list[p].append(list(self.hand[p].values()))
@@ -85,6 +89,10 @@ class PlayGame:
 
                     if action in self.env.card_map:
                         if self.hand[p][action] > 0:
+                            if self.verbose > 0:
+                                print('Action:', action)
+                                if self.verbose == 2:
+                                    time.sleep(1.2)
                             self.execute_action(action, p)
                         else:
                             action = 'none'
@@ -93,13 +101,14 @@ class PlayGame:
                     self.actions[p] -= 1
 
                     if self.verbose > 0:
-                            print('Action:', action)
-                            if action in ['chapel', 'remodel', 'village', 'witch', 'moneylender']:
-                                hand_to_print = []
-                                for card in self.hand[p]:
-                                    for i in range(self.hand[p][card]):
-                                        hand_to_print.append(card)
-                                print(hand_to_print)
+                        if action in ['chapel', 'remodel', 'village', 'witch', 'moneylender']:
+                            hand_to_print = []
+                            for card in self.hand[p]:
+                                for i in range(self.hand[p][card]):
+                                    hand_to_print.append(card)
+                            if self.verbose == 2:
+                                time.sleep(1.2)
+                            print(hand_to_print)
 
                 self.timer = time.time()
                 buy = self.player[p].buy(
@@ -128,6 +137,8 @@ class PlayGame:
                     buy = 'none'
                 if self.verbose > 0:
                     print('Buy:', buy)
+                    if self.verbose == 2:
+                        time.sleep(1.2)
 
                 self.move_list[p].append([self.coin, action, buy])
 
@@ -241,6 +252,7 @@ class PlayGame:
         elif action == 'moneylender':
             if self.hand[player]['copper'] > 0:
                 self.in_play[player]['moneylender'] += 1
+                self.hand[player]['moneylender'] -= 1
                 self.hand[player]['copper'] -= 1
                 self.coin += 3
 
@@ -260,6 +272,7 @@ class PlayGame:
                     player
             )
             self.add_time(player)
+
             if remodel:
                 if (remodel[0] in self.env.card_map) and (remodel[1] in self.env.card_map):
                     if (
@@ -269,6 +282,8 @@ class PlayGame:
                     ):
                         if self.verbose > 0:
                             print('{} remodeled into a {}'.format(remodel[0], remodel[1]))
+                            if self.verbose == 2:
+                                time.sleep(1.2)
                         self.hand[player][remodel[0]] -= 1
                         self.trash[remodel[0]] += 1
                         self.discard[player][remodel[1]] += 1
@@ -298,6 +313,8 @@ class PlayGame:
                         self.trash[card] += 1
                         if self.verbose > 0:
                             print('Trashed:', card)
+                            if self.verbose == 2:
+                                time.sleep(.5)
 
 
 
