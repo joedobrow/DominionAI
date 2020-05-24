@@ -10,7 +10,9 @@ Rules for the bots: They must be a class with an __init__ method that declares a
 
 KellenBot001 utilized duchy dancing and extensive ad hoc logic using if statements to edge out the win over JoeBot in week 1! More complex bots did worse this week.
 
-<h3>Week 2 5/10/2020: Remodel, Smithy, Moneylender</h3>
+<h3>Week 2 5/10/2020</h3>
+
+New cards: Remodel, Smithy, Moneylender
 
 1st Place: Joe with AdHocStrat8
 2nd Place: Kellen with KellenBot002
@@ -28,4 +30,5 @@ New cards: Chapel, Village, Gardens, Witch
 Another neck and neck showdown between Joe and Kellen. KellenBot003 highlighted diverse strategy, even buying gardens and remodels in the right situations, but was barely edged out by HolyWitch's finely tuned parameters.
 
 <h3>Week 4 6/7/2020</h3>
+
 New cards: Moat, Workshop, Militia, Council Room
