@@ -20,9 +20,12 @@ AdHocStrat8 only bought smithy, usually 2-3 in a game, and utilized priority lis
 <h3>Week3 5/17/2020</h3>
 
 Smithy: banned
-New cards: Chapel, village, gardens, witch
+New cards: Chapel, Village, Gardens, Witch
 
 1st Place: Joe with HolyWitch
 2nd Place: Kellen with KellenBot003
 
 Another neck and neck showdown between Joe and Kellen. KellenBot003 highlighted diverse strategy, even buying gardens and remodels in the right situations, but was barely edged out by HolyWitch's finely tuned parameters.
+
+<h3>Week 4 6/7/2020</h3>
+New cards: Moat, Workshop, Militia, Council Room
