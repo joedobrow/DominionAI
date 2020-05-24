@@ -17,7 +17,7 @@ KellenBot001 utilized duchy dancing and extensive ad hoc logic using if statemen
 
 AdHocStrat8 only bought smithy, usually 2-3 in a game, and utilized priority lists based on a simple function of 'provinces remaining', 'average coin' and 'number actions.' Kellens bot was close, jack tried moneylender but it wasn't good enough, and tom's bot prioritzed silvers over gold...He blamed it on bugs in joe's code.
 
-<h3>Week3 5/17/2020</h3>
+<h3>Week 3 5/17/2020</h3>
 
 Smithy: banned
 New cards: Chapel, Village, Gardens, Witch
