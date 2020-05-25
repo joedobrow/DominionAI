@@ -5,17 +5,21 @@ import Environment
 import PlayGame
 import GUI
 import JoeBotW3
+import TomBot
+import KellenBot003
+import DaveChapel
 import copy
 
 # - - - -  - - - -CHANGE THESE VARIABLES - - - - - - - - -
 # verbose 0: display  score, runtime, average VP, and turn win over multiple games
 # verbose 1: display all of the moves for 1 game
-# verbose 2: GUI animation of the game
+# verbose 2: turn by turn
+# verbose 3: GUI (BROKEN)
 
 verbose = 1
-num_games = 1000
+num_games = 500
 
-bots = [JoeBotW3.HolyWitch(), JoeBotW3.HolyWitchTest()]
+bots = [KellenBot003.KellenBot003(), JoeBotW3.HolyWitch()]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -51,14 +55,13 @@ else:
 print('\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -')
 print('\t\t\tDOMINION BOT BATTLES')
 print('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -')
-
 print("\n\n\nBot 1: {}\t\tBot 2: {}".format(bots[0].name, bots[1].name), '\n')
-
 this_data = []
 
 for i in range(iterations):
-	if (i%(max(iterations // 10, 1)) == 0):
-		print('{} out of {} epochs completed, score: {}'.format(i, iterations, score))
+	if verbose == 0:
+		if (i%(max(iterations // 10, 1)) == 0):
+			print('{} out of {} epochs completed, score: {}'.format(i, iterations, score))
 
 	x = PlayGame.PlayGame(bots[0], bots[1], verbose=verbose)
 	result = x.play_game()
@@ -88,7 +91,7 @@ for i in range(iterations):
 # 13 - handlist post smithy bot0
 # 14 - handlist post smithy bot1
 
-if verbose == 2:
+if verbose == 3:
 	y = GUI.CreateGUI(
 			result[5], 
 			result[6], 
@@ -102,8 +105,8 @@ if verbose == 2:
 			bots[1].name, 
 			bots[result[0]].name
 	)
-
 if verbose == 1:
+	print("\n\n\nBot 1: {}\t\tBot 2: {}".format(bots[0].name, bots[1].name), '\n')
 	print('\n\t\tMOVE LIST:')
 	print('\nStarting player: {}'.format(bots[result[1]].name))
 	for move in range(len(result[5])):

@@ -6,28 +6,40 @@ class BaseBot:
         
         self.name = "BaseBot"
 
-    def action(self, card_map, deck, hand, discard, bonus_coin, actions, in_play, trash, player):
+    def action(self, card_map, deck, hand, discard, bonus_coin, actions, buys, in_play, trash, attack_immune, player):
         # This should return a string of the action card you want to play
         # For example: 'smithy'
         return 'action'
     
-    def buy(self, card_map, deck, hand, discard, bonus_coin, actions, in_play, trash, player):
+    def buy(self, card_map, deck, hand, discard, bonus_coin, actions, buys, in_play, trash, attack_immune, player):
         # bonus_coin is extra coin gotten from other effects such as moneylender
         # This should return the card you want to buy
         # For example: 'province'
            
         return 'buy'
 
-    def remodel(self, card_map, deck, hand, discard, bonus_coin, actions, in_play, trash, player):
+    def remodel(self, card_map, deck, hand, discard, bonus_coin, actions, buys, in_play, trash, attack_immune, player):
         # this should return an array with the card you want to trash followed by the card you want to gain.
         # For example: ['silver', 'duchy']
         return ['trashed_card', 'gained_card']
 
-    def chapel(self, card_map, deck, hand, discard, bonus_coin, actions, in_play, trash, player):
+    def chapel(self, card_map, deck, hand, discard, bonus_coin, actions, buys, in_play, trash, attack_immune, player):
         # If cards are erroneously returned, nothing will be trashed. If some of the cards are
         # erroneous but some are correct, the correct returns will still be trashed.
 
-        return ['card_1', 'card_2', 'and_so_on']
+        return ['card_1', 'card_2', 'up_to_4']
+
+    def militia(self, card_map, deck, hand, discard, bonus_coin, actions, buys, in_play, trash, attack_immune, player):
+        # YOU SHOULD HAVE THIS METHOD EVEN IF YOU DON'T BUY MILLITIA
+        # Return a list of 2 cards that you want to discard if your opponent militias you
+        # Any sort of bad return will result in 2 random cards being discarded
+
+        return ['card_1', 'card_2']
+
+    def workshop(self, card_map, deck, hand, discard, bonus_coin, actions, buys, in_play, trash, attack_immune, player):
+        # Return a single card you want to gain
+
+        return 'gained_card'
 
 
     # HELPER FUNCTIONS:
