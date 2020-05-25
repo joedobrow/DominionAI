@@ -30,7 +30,7 @@ class PlayGame:
         self.buys = [1, 1]
         self.trash = {}
         self.verbose = verbose
-        self.attack_immune[0, 0]
+        self.attack_immune = [0, 0]
         
         for card in list(self.env.card_map.keys()):
             self.deck[0][card], self.deck[1][card] = 0, 0
@@ -87,12 +87,13 @@ class PlayGame:
                             copy.deepcopy(self.buys[p]),
                             copy.deepcopy(self.in_play[p]),
                             copy.deepcopy(self.trash),
-                            copy.deepcopy(self.attack_immune[1 - player]),
+                            copy.deepcopy(self.attack_immune[1 - p]),
                             p
                     )
-                    if 'attack' in self.env.card_map[a]['types']:
-                        if self.hand[1 - p]['moat'] > 0:
-                            self.attack_immune[1 - p] = 1
+                    if a in self.env.card_map:
+                        if 'attack' in self.env.card_map[a]['types']:
+                            if self.hand[1 - p]['moat'] > 0:
+                                self.attack_immune[1 - p] = 1
                     self.add_time(p)
 
                     if a in self.env.card_map:
@@ -132,7 +133,7 @@ class PlayGame:
                             copy.deepcopy(self.buys[p]),
                             copy.deepcopy(self.in_play[p]),
                             copy.deepcopy(self.trash),
-                            copy.deepcopy(self.attack_immune[1 - player]),
+                            copy.deepcopy(self.attack_immune[1 - p]),
                             p
                     )
                     self.add_time(p)
@@ -144,7 +145,7 @@ class PlayGame:
                         if (self.env.card_map[b]['supply'] > 0) and (self.coin >= self.env.card_map[b]['cost']):
                             self.discard[p][b] += 1
                             self.env.card_map[b]['supply'] -= 1
-                            self.coin -= self.evn.card_map[b]['cost']
+                            self.coin -= self.env.card_map[b]['cost']
                         else:
                             b = 'none'
                     else:
@@ -387,18 +388,12 @@ class PlayGame:
                                 copy.deepcopy(self.attack_immune[1 - player]),
                                 player
                             )
-                try:
-                    if self.hand[1 - player][militia[0]] > 0:
+                if (len(militia) == 2) and (self.hand[1 - player][militia[0]] > 0) and (self.hand[1 - player][militia[1]] > 0):
                         self.hand[1- player][militia[0]] -= 1
                         self.discard[1 - player][militia[0]] += 1
-                    else:
-                        1 = 2
-                    if self.hand[1 - player][militia[1]] > 0:
                         self.hand[1- player][militia[1]] -= 1
                         self.discard[1 - player][militia[1]] += 1
-                    else:
-                        1 = 2
-                except:
+                else:
                     for i in range(2):
                         to_disc = random.randint(1, sum(self.hand[1 - player].values()))
                         for card in self.hand[1 - player]:

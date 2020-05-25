@@ -4,10 +4,7 @@ import random
 import Environment
 import PlayGame
 import GUI
-import JoeBotW3
-import TomBot
-import KellenBot003
-import DaveChapel
+import JoeBotW4
 import copy
 
 # - - - -  - - - -CHANGE THESE VARIABLES - - - - - - - - -
@@ -19,7 +16,7 @@ import copy
 verbose = 1
 num_games = 500
 
-bots = [KellenBot003.KellenBot003(), JoeBotW3.HolyWitch()]
+bots = [JoeBotW4.BigMoney(), JoeBotW4.BigMoney()]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
