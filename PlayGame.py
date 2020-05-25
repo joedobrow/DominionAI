@@ -27,8 +27,10 @@ class PlayGame:
         self.runtimes = [0, 0]
         self.extra_text = [[], []]
         self.actions = [1, 1]
+        self.buys = [1, 1]
         self.trash = {}
         self.verbose = verbose
+        self.attack_immune[0, 0]
         
         for card in list(self.env.card_map.keys()):
             self.deck[0][card], self.deck[1][card] = 0, 0
@@ -72,33 +74,40 @@ class PlayGame:
                 self.hand_list[p].append(list(self.hand[p].values()))
                 self.coin = 0
                 
+                action = []
                 while self.actions[p] > 0:
                     self.timer = time.time()
-                    action = self.player[p].action(
+                    a = self.player[p].action(
                             copy.deepcopy(self.env.card_map), 
                             copy.deepcopy(self.deck[p]), 
                             copy.deepcopy(self.hand[p]), 
                             copy.deepcopy(self.discard[p]),
                             self.coin,
                             copy.deepcopy(self.actions[p]),
+                            copy.deepcopy(self.buys[p]),
                             copy.deepcopy(self.in_play[p]),
                             copy.deepcopy(self.trash),
+                            copy.deepcopy(self.attack_immune[1 - player]),
                             p
                     )
+                    if 'attack' in self.env.card_map[a]['types']:
+                        if self.hand[1 - p]['moat'] > 0:
+                            self.attack_immune[1 - p] = 1
                     self.add_time(p)
 
-                    if action in self.env.card_map:
-                        if self.hand[p][action] > 0:
+                    if a in self.env.card_map:
+                        if self.hand[p][a] > 0:
                             if self.verbose > 0:
-                                print('Action:', action)
+                                print('Action:', a)
                                 if self.verbose == 2:
                                     time.sleep(1.2)
-                            self.execute_action(action, p)
+                            self.execute_action(a, p)
                         else:
-                            action = 'none'
+                            a = 'none'
                     else:
-                        action = 'none'
+                        a = 'none'
                     self.actions[p] -= 1
+                    action.append(a)
 
                     if self.verbose > 0:
                         if action in ['chapel', 'remodel', 'village', 'witch', 'moneylender']:
@@ -110,37 +119,44 @@ class PlayGame:
                                 time.sleep(1.2)
                             print(hand_to_print)
 
-                self.timer = time.time()
-                buy = self.player[p].buy(
-                        copy.deepcopy(self.env.card_map), 
-                        copy.deepcopy(self.deck[p]), 
-                        copy.deepcopy(self.hand[p]), 
-                        copy.deepcopy(self.discard[p]), 
-                        copy.copy(self.coin),
-                        copy.deepcopy(self.actions[p]),
-                        copy.deepcopy(self.in_play[p]),
-                        copy.deepcopy(self.trash),
-                        p
-                )
-                self.add_time(p)
+                buy = []
+                while self.buys[p] > 0:
+                    self.timer = time.time()
+                    b = self.player[p].buy(
+                            copy.deepcopy(self.env.card_map), 
+                            copy.deepcopy(self.deck[p]), 
+                            copy.deepcopy(self.hand[p]), 
+                            copy.deepcopy(self.discard[p]), 
+                            copy.copy(self.coin),
+                            copy.deepcopy(self.actions[p]),
+                            copy.deepcopy(self.buys[p]),
+                            copy.deepcopy(self.in_play[p]),
+                            copy.deepcopy(self.trash),
+                            copy.deepcopy(self.attack_immune[1 - player]),
+                            p
+                    )
+                    self.add_time(p)
 
-                for card in self.env.card_map:
-                    self.coin += self.hand[p][card] * self.env.card_map[card]['coin']
+                    for card in self.env.card_map:
+                        self.coin += self.hand[p][card] * self.env.card_map[card]['coin']
 
-                if buy in self.env.card_map:
-                    if (self.env.card_map[buy]['supply'] > 0) and (self.coin >= self.env.card_map[buy]['cost']):
-                        self.discard[p][buy] += 1
-                        self.env.card_map[buy]['supply'] -= 1
+                    if b in self.env.card_map:
+                        if (self.env.card_map[b]['supply'] > 0) and (self.coin >= self.env.card_map[b]['cost']):
+                            self.discard[p][b] += 1
+                            self.env.card_map[b]['supply'] -= 1
+                            self.coin -= self.evn.card_map[b]['cost']
+                        else:
+                            b = 'none'
                     else:
-                        buy = 'none'
-                else:
-                    buy = 'none'
-                if self.verbose > 0:
-                    print('Buy:', buy)
-                    if self.verbose == 2:
-                        time.sleep(1.2)
+                        b = 'none'
+                    if self.verbose > 0:
+                        print('Buy:', b)
+                        if self.verbose == 2:
+                            time.sleep(1.2)
+                    self.buys[p] -= 1
+                    buy.append(b)
 
-                self.move_list[p].append([self.coin, action, buy])
+                    self.move_list[p].append([self.coin, action, buy])
 
                 if self.env.check_win():
                     to_return = []
@@ -194,9 +210,10 @@ class PlayGame:
             card_amount = self.in_play[player][card]
             self.discard[player][card] += card_amount
             self.in_play[player][card] -= card_amount
-            
         self.draw_card(5, player)
         self.actions[player] = 1
+        self.buys[player] = 1
+        self.attack_immune[player] = 0
 
     def draw_card(self, cards, player):
 
@@ -267,8 +284,10 @@ class PlayGame:
                     copy.deepcopy(self.discard[player]), 
                     self.coin,
                     copy.deepcopy(self.actions[player]),
+                    copy.deepcopy(self.buys[player]),
                     copy.deepcopy(self.in_play[player]),
                     copy.deepcopy(self.trash),
+                    copy.deepcopy(self.attack_immune[1 - player]),
                     player
             )
             self.add_time(player)
@@ -302,19 +321,24 @@ class PlayGame:
                     copy.deepcopy(self.discard[player]), 
                     self.coin,
                     copy.deepcopy(self.actions[player]),
+                    copy.deepcopy(self.buys[player]),
                     copy.deepcopy(self.in_play[player]),
                     copy.deepcopy(self.trash),
+                    copy.deepcopy(self.attack_immune[1 - player]),
                     player
             )
             if chapel:
+                num = 0
                 for card in chapel:
-                    if self.hand[player][card] > 0:
-                        self.hand[player][card] -= 1
-                        self.trash[card] += 1
-                        if self.verbose > 0:
-                            print('Trashed:', card)
-                            if self.verbose == 2:
-                                time.sleep(.5)
+                    if num < 4:
+                        if self.hand[player][card] > 0:
+                            self.hand[player][card] -= 1
+                            self.trash[card] += 1
+                            if self.verbose > 0:
+                                print('Trashed:', card)
+                                if self.verbose == 2:
+                                    time.sleep(.5)
+                    num += 1
 
 
 
@@ -328,7 +352,83 @@ class PlayGame:
             self.hand[player]['witch'] -= 1
             self.in_play[player]['witch'] += 1
             self.draw_card(2, player)
-            if self.env.card_map['curse']['supply'] > 0:
-                self.discard[1 - player]['curse'] += 1
-                self.env.card_map['curse']['supply'] -= 1
+            if self.attack_immune[1 - player] == 0:
+                if self.env.card_map['curse']['supply'] > 0:
+                    self.discard[1 - player]['curse'] += 1
+                    self.env.card_map['curse']['supply'] -= 1
+
+        elif action == 'moat':
+            self.hand[player]['moat'] -= 1
+            self.in_play[player]['moat'] += 1
+            self.draw_card(2, player)
+
+        elif action == 'council_room':
+            self.hand[player]['council_room'] -= 1
+            self.in_play[player]['council_room'] += 1
+            self.draw_card(4, player)
+            self.draw_card(1, 1 - player)
+            self.buys[player] += 1
+
+        elif action == 'militia':
+            self.hand[player]['militia'] -= 1
+            self.in_play[player]['militia'] += 1
+            self.coin += 2
+            if self.attack_immune[1 - player] == 0:
+                militia = self.player[1 - player].militia(
+                                copy.deepcopy(self.env.card_map), 
+                                copy.deepcopy(self.deck[player]), 
+                                copy.deepcopy(self.hand[player]), 
+                                copy.deepcopy(self.discard[player]), 
+                                self.coin,
+                                copy.deepcopy(self.actions[player]),
+                                copy.deepcopy(self.buys[player]),
+                                copy.deepcopy(self.in_play[player]),
+                                copy.deepcopy(self.trash),
+                                copy.deepcopy(self.attack_immune[1 - player]),
+                                player
+                            )
+                try:
+                    if self.hand[1 - player][militia[0]] > 0:
+                        self.hand[1- player][militia[0]] -= 1
+                        self.discard[1 - player][militia[0]] += 1
+                    else:
+                        1 = 2
+                    if self.hand[1 - player][militia[1]] > 0:
+                        self.hand[1- player][militia[1]] -= 1
+                        self.discard[1 - player][militia[1]] += 1
+                    else:
+                        1 = 2
+                except:
+                    for i in range(2):
+                        to_disc = random.randint(1, sum(self.hand[1 - player].values()))
+                        for card in self.hand[1 - player]:
+                            if self.hand[1 - player][card] <= to_disc:
+                                self.hand[1 - player][card] -= 1
+                                self.discard[1 - player][card] += 1
+                                break
+                            else:
+                                to_disc -= self.hand[1 - player][card]
+
+        elif action == 'workshop':
+            self.hand[player]['workshop'] -= 1
+            self.in_play[player]['workshop'] += 1
+            workshop = self.player[1 - player].workshop(
+                            copy.deepcopy(self.env.card_map), 
+                            copy.deepcopy(self.deck[player]), 
+                            copy.deepcopy(self.hand[player]), 
+                            copy.deepcopy(self.discard[player]), 
+                            self.coin,
+                            copy.deepcopy(self.actions[player]),
+                            copy.deepcopy(self.buys[player]),
+                            copy.deepcopy(self.in_play[player]),
+                            copy.deepcopy(self.trash),
+                            copy.deepcopy(self.attack_immune[1 - player]),
+                            player
+                        )
+            try:
+                if (self.env.card_map[workshop]['cost'] <= 4) and (self.env.card_map[workshop]['supply'] > 0):
+                    self.env.card_map[workshop]['supply'] -= 1
+                    self.discard[player][workshop] += 1
+            except:
+                None
 

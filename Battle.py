@@ -5,17 +5,21 @@ import Environment
 import PlayGame
 import GUI
 import JoeBotW3
+import TomBot
+import KellenBot003
+import DaveChapel
 import copy
 
 # - - - -  - - - -CHANGE THESE VARIABLES - - - - - - - - -
 # verbose 0: display  score, runtime, average VP, and turn win over multiple games
 # verbose 1: display all of the moves for 1 game
-# verbose 2: GUI animation of the game
+# verbose 2: turn by turn
+# verbose 3: GUI (BROKEN)
 
 verbose = 1
 num_games = 500
 
-bots = [JoeBotW3.HolyWitch(), JoeBotW3.HolyWitchTest()]
+bots = [KellenBot003.KellenBot003(), JoeBotW3.HolyWitch()]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
