@@ -62,10 +62,6 @@ class PlayGame:
                     for card in self.hand[p]:
                         for i in range(self.hand[p][card]):
                             hand_to_print.append(card)
-                    if len(hand_to_print) < 5:
-                        print(self.hand[p])
-                        print(self.discard[p])
-                        print(self.deck[p])
                     print(hand_to_print)
                     if self.verbose == 2:
                         time.sleep(1.2)
@@ -111,7 +107,7 @@ class PlayGame:
                     action.append(a)
 
                     if self.verbose > 0:
-                        if action in ['chapel', 'remodel', 'village', 'witch', 'moneylender']:
+                        if a in ['chapel', 'remodel', 'village', 'witch', 'moneylender', 'council_room', 'moat']:
                             hand_to_print = []
                             for card in self.hand[p]:
                                 for i in range(self.hand[p][card]):
@@ -140,6 +136,7 @@ class PlayGame:
 
                     for card in self.env.card_map:
                         self.coin += self.hand[p][card] * self.env.card_map[card]['coin']
+                    c = self.coin
 
                     if b in self.env.card_map:
                         if (self.env.card_map[b]['supply'] > 0) and (self.coin >= self.env.card_map[b]['cost']):
@@ -157,7 +154,7 @@ class PlayGame:
                     self.buys[p] -= 1
                     buy.append(b)
 
-                    self.move_list[p].append([self.coin, action, buy])
+                    self.move_list[p].append([c, action, buy])
 
                 if self.env.check_win():
                     to_return = []
@@ -388,26 +385,38 @@ class PlayGame:
                                 copy.deepcopy(self.attack_immune[1 - player]),
                                 player
                             )
-                if (len(militia) == 2) and (self.hand[1 - player][militia[0]] > 0) and (self.hand[1 - player][militia[1]] > 0):
-                        self.hand[1- player][militia[0]] -= 1
-                        self.discard[1 - player][militia[0]] += 1
-                        self.hand[1- player][militia[1]] -= 1
-                        self.discard[1 - player][militia[1]] += 1
-                else:
+                try:
+                    if (len(militia) == 2) and (self.hand[1 - player][militia[0]] > 0) and (self.hand[1 - player][militia[1]] > 0) and militia[0] in card_map and militia[1] in card_map: 
+                            self.hand[1- player][militia[0]] -= 1
+                            self.discard[1 - player][militia[0]] += 1
+                            self.hand[1- player][militia[1]] -= 1
+                            self.discard[1 - player][militia[1]] += 1
+                    else:
+                        print('2')
+                        for i in range(2):
+                            to_disc = random.randint(1, sum(self.hand[1 - player].values()))
+                            for card in self.hand[1 - player]:
+                                if to_disc <= self.hand[1 - player][card]:
+                                    self.hand[1 - player][card] -= 1
+                                    self.discard[1 - player][card] += 1
+                                    break
+                                else:
+                                    to_disc -= self.hand[1 - player][card]
+                except:
+                    print('1')
                     for i in range(2):
                         to_disc = random.randint(1, sum(self.hand[1 - player].values()))
                         for card in self.hand[1 - player]:
-                            if self.hand[1 - player][card] <= to_disc:
+                            if self.hand[1 - player][card] >= to_disc:
                                 self.hand[1 - player][card] -= 1
                                 self.discard[1 - player][card] += 1
                                 break
                             else:
                                 to_disc -= self.hand[1 - player][card]
-
         elif action == 'workshop':
             self.hand[player]['workshop'] -= 1
             self.in_play[player]['workshop'] += 1
-            workshop = self.player[1 - player].workshop(
+            workshop = self.player[player].workshop(
                             copy.deepcopy(self.env.card_map), 
                             copy.deepcopy(self.deck[player]), 
                             copy.deepcopy(self.hand[player]), 
@@ -426,4 +435,6 @@ class PlayGame:
                     self.discard[player][workshop] += 1
             except:
                 None
+            if self.verbose > 0:
+                print('Workshop gain:', workshop)
 

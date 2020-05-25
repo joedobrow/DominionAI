@@ -34,10 +34,14 @@ class Environment:
             'province': {'cost': 8, 'coin': 0, 'vp': 6, 'types': ['victory'], 'supply': 8, 'start_supply': 8},
             'curse': {'cost': 0, 'coin': 0, 'vp': -1, 'types': ['victory'], 'supply': 10, 'start_supply': 10},
             'chapel': {'cost': 2, 'coin': 0, 'vp': 0, 'types': ['action'], 'supply': 10, 'start_supply': 10},
+            'council_room': {'cost': 5, 'coin': 0, 'vp': 0, 'types': ['action'], 'supply': 10, 'start_supply': 10},
             'gardens': {'cost': 4, 'coin': 0, 'vp': 0, 'types': ['victory'], 'supply': 8, 'start_supply': 8},
+            'militia': {'cost': 4, 'coin': 0, 'vp': 0, 'types': ['action', 'attack'], 'supply': 10, 'start_supply': 10},
+            'moat': {'cost': 2, 'coin': 0, 'vp': 0, 'types': ['action', 'reaction'], 'supply': 10, 'start_supply': 10},
             'moneylender': {'cost': 4, 'coin': 0, 'vp': 0, 'types': ['action'], 'supply': 10, 'start_supply': 10},
             'remodel': {'cost': 4, 'coin': 0, 'vp': 0, 'types': ['action'], 'supply': 10, 'start_supply': 10},
             # TEMPORARILY BANNED 'smithy': {'cost': 4, 'coin': 0, 'vp': 0, 'types': ['action'], 'supply': 10, 'start_supply': 10},
             'village': {'cost': 3, 'coin': 0, 'vp': 0, 'types': ['action'], 'supply': 10, 'start_supply': 10},
             'witch': {'cost': 5, 'coin': 0, 'vp': 0, 'types': ['action', 'attack'], 'supply': 10, 'start_supply': 10},
-        }    
+            'workshop': {'cost': 3, 'coin': 0, 'vp': 0, 'types': ['action'], 'supply': 10, 'start_supply': 10}
+        }

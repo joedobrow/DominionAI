@@ -16,7 +16,7 @@ import copy
 verbose = 1
 num_games = 500
 
-bots = [JoeBotW4.BigMoney(), JoeBotW4.BigMoney()]
+bots = [JoeBotW4.BigMoney(), JoeBotW4.WorkshopBot()]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
