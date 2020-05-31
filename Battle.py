@@ -13,10 +13,10 @@ import copy
 # verbose 2: turn by turn
 # verbose 3: GUI (BROKEN)
 
-verbose = 1
+verbose = 0
 num_games = 500
 
-bots = [JoeBotW4.BigMoney(), JoeBotW4.WorkshopBot()]
+bots = [JoeBotW4.BigMoney(), JoeBotW4.WorkshopAggro()]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -29,11 +29,15 @@ cards = {
 	'province' : 0,
 	'curse' : 0,
 	'chapel': 0,
+	'council_room': 0,
 	'gardens': 0,
+	'militia': 0,
+	'moat': 0,
 	'moneylender' : 0,
 	'remodel' : 0,
 	'village' : 0,
-	'witch': 0
+	'witch': 0,
+	'workshop': 0
 }
 avg_turn_win = [0, 0]
 score = [0, 0]

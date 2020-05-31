@@ -53,8 +53,9 @@ class PlayGame:
 
                 if self.verbose > 0:
                     vp = 0
+                    vp += ((sum(self.hand[p].values()) + sum(self.deck[p].values()) + sum(self.discard[p].values()) + sum(self.in_play[p].values())) // 10) * (self.hand[p]['gardens'] + self.deck[p]['gardens'] + self.discard[p]['gardens'] + self.in_play[p]['gardens'])
                     for card in self.env.card_map:
-                        vp += (self.hand[p][card] + self.discard[p][card] + self.deck[p][card]) * self.env.card_map[card]['vp']
+                        vp += (self.hand[p][card] + self.discard[p][card] + self.deck[p][card] + self.in_play[p][card]) * self.env.card_map[card]['vp']
                     print('\n####  {}'.format(self.player[p].name) + '  ####' + '-' * (30 - len(self.player[p].name)) + '####', 'Turn:', turn + 1, 'VP:', vp, ' ####')
                     if self.verbose == 2:
                         time.sleep(1.2)
@@ -248,8 +249,8 @@ class PlayGame:
             vp_total += self.deck[player][card] * self.env.card_map[card]['vp']
             vp_total += self.discard[player][card] * self.env.card_map[card]['vp']
             vp_total += self.hand[player][card] * self.env.card_map[card]['vp']
-        num_cards = sum(self.discard[player].values()) + sum(self.deck[player].values()) + sum(self.hand[player].values())
-        vp_total += (num_cards//10) * (self.hand[player]['gardens'] + self.discard[player]['gardens'] + self.deck[player]['gardens'])
+        num_cards = sum(self.discard[player].values()) + sum(self.deck[player].values()) + sum(self.hand[player].values()) + sum(self.hand[player].values())
+        vp_total += (num_cards//10) * (self.hand[player]['gardens'] + self.discard[player]['gardens'] + self.deck[player]['gardens'] + self.in_play[player]['gardens'])
         return vp_total
 
     def add_time(self, player):
