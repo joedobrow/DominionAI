@@ -13,10 +13,10 @@ import copy
 # verbose 2: turn by turn
 # verbose 3: GUI (BROKEN)
 
-verbose = 0
-num_games = 500
+verbose = 1
+num_games = 100
 
-bots = [JoeBotW4.BigMoney(), JoeBotW4.WorkshopAggro()]
+bots = [JoeBotW4.BigMoney(), JoeBotW4.BigMoney()]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 

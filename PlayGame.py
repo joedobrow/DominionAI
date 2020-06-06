@@ -118,6 +118,10 @@ class PlayGame:
                             print(hand_to_print)
 
                 buy = []
+                for card in self.env.card_map:
+                        self.coin += self.hand[p][card] * self.env.card_map[card]['coin']
+                c = self.coin
+
                 while self.buys[p] > 0:
                     self.timer = time.time()
                     b = self.player[p].buy(
@@ -134,10 +138,6 @@ class PlayGame:
                             p
                     )
                     self.add_time(p)
-
-                    for card in self.env.card_map:
-                        self.coin += self.hand[p][card] * self.env.card_map[card]['coin']
-                    c = self.coin
 
                     if b in self.env.card_map:
                         if (self.env.card_map[b]['supply'] > 0) and (self.coin >= self.env.card_map[b]['cost']):
