@@ -375,15 +375,15 @@ class PlayGame:
             if self.attack_immune[1 - player] == 0:
                 militia = self.player[1 - player].militia(
                                 copy.deepcopy(self.env.card_map), 
-                                copy.deepcopy(self.deck[player]), 
-                                copy.deepcopy(self.hand[player]), 
-                                copy.deepcopy(self.discard[player]), 
+                                copy.deepcopy(self.deck[1- player]), 
+                                copy.deepcopy(self.hand[1 - player]), 
+                                copy.deepcopy(self.discard[1 - player]), 
                                 self.coin,
-                                copy.deepcopy(self.actions[player]),
-                                copy.deepcopy(self.buys[player]),
-                                copy.deepcopy(self.in_play[player]),
+                                copy.deepcopy(self.actions[1 - player]),
+                                copy.deepcopy(self.buys[1 - player]),
+                                copy.deepcopy(self.in_play[1 - player]),
                                 copy.deepcopy(self.trash),
-                                copy.deepcopy(self.attack_immune[1 - player]),
+                                copy.deepcopy(self.attack_immune[player]),
                                 player
                             )
                 try:
