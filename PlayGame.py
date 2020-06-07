@@ -329,14 +329,15 @@ class PlayGame:
             if chapel:
                 num = 0
                 for card in chapel:
-                    if num < 4:
-                        if self.hand[player][card] > 0:
-                            self.hand[player][card] -= 1
-                            self.trash[card] += 1
-                            if self.verbose > 0:
-                                print('Trashed:', card)
-                                if self.verbose == 2:
-                                    time.sleep(.5)
+                    if card in self.env.card_map:
+                        if num < 4:
+                            if self.hand[player][card] > 0:
+                                self.hand[player][card] -= 1
+                                self.trash[card] += 1
+                                if self.verbose > 0:
+                                    print('Trashed:', card)
+                                    if self.verbose == 2:
+                                        time.sleep(.5)
                     num += 1
 
 
@@ -393,7 +394,6 @@ class PlayGame:
                             self.hand[1- player][militia[1]] -= 1
                             self.discard[1 - player][militia[1]] += 1
                     else:
-                        print('2')
                         for i in range(2):
                             to_disc = random.randint(1, sum(self.hand[1 - player].values()))
                             for card in self.hand[1 - player]:
@@ -404,8 +404,7 @@ class PlayGame:
                                 else:
                                     to_disc -= self.hand[1 - player][card]
                 except:
-                    print('1')
-                    for i in range(2):
+                    for i in range(sum(self.hand[1 - player].values()) - 3):
                         to_disc = random.randint(1, sum(self.hand[1 - player].values()))
                         for card in self.hand[1 - player]:
                             if self.hand[1 - player][card] >= to_disc:

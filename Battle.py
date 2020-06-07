@@ -13,10 +13,10 @@ import copy
 # verbose 2: turn by turn
 # verbose 3: GUI (BROKEN)
 
-verbose = 1
+verbose = 0
 num_games = 100
 
-bots = [JoeBotW4.BigMoney(), JoeBotW4.BigMoney()]
+bots = [JoeBotW4.BigMoney(), JoeBotW4.GeneralBot()]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -73,8 +73,7 @@ for i in range(iterations):
 	runtime[0] += result[9]
 	runtime[1] += result[10]
 
-
-
+	
 # RESULT KEY:
 # 0 - winner 0/1 for bot0 or bot1
 # 1 - player that won
