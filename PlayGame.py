@@ -388,16 +388,18 @@ class PlayGame:
                                 player
                             )
                 try:
-                    if (len(militia) == sum(self.hand[1 - player]).values()) - 3:
-                        for card in range(len(militia)):
-                            if self.hand[1 - player][militia[card]] > 0:
-                                self.hand[1- player][militia[card]] -= 1
-                                self.discard[1 - player][militia[card]] += 1
+                    if (len(militia) == sum(self.hand[1 - player].values()) - 3):
+                        for cardi in range(len(militia)):
+                            if self.hand[1 - player][militia[cardi]] > 0:
+                                self.hand[1- player][militia[cardi]] -= 1
+                                self.discard[1 - player][militia[cardi]] += 1
+                                if self.verbose > 0:
+                                    print('Discard: ', militia[cardi])
                             else:
                                 self.random_discard(1 - player, 1)
 
                     else:
-                        self.random_discard(sum(self.hand[1 - player].values()) - 3)
+                        self.random_discard(1 - player, sum(self.hand[1 - player].values()) - 3)
                 except:
                     self.random_discard(1 - player, sum(self.hand[1 - player].values()) - 3)
         elif action == 'workshop':
@@ -432,6 +434,8 @@ class PlayGame:
                 if self.hand[player][card] >= to_disc:
                     self.hand[player][card] -= 1
                     self.discard[player][card] += 1
+                    if self.verbose > 0:
+                        print('Random discard: ', card)
                     break
                 else:
                     to_disc -= self.hand[player][card]
