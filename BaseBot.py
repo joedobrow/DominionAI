@@ -2,9 +2,14 @@ import random
 
 class BaseBot:
     
-    def __init__(self):
+    def __init__(self, card_map):
         
         self.name = "BaseBot"
+
+        #Since card_map is now a parameter, you can set strategy here based on what kingdom cards are available
+
+        if card_map['moat']['supply'] > 0:
+            self.sick_moat_strat = True
 
     def action(self, card_map, deck, hand, discard, coin, actions, buys, in_play, trash, attack_immune, player):
         # This should return a string of the action card you want to play

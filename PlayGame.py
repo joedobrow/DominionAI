@@ -1,11 +1,10 @@
 import random
 import time
-import Environment
 import copy
 
 class PlayGame:
     
-    def __init__(self, bot1, bot2, verbose = 0):
+    def __init__(self, bot1, bot2, env, verbose = 0):
         
         # Determine player1 and player2. Note: Player 1 loses a victory point tie.
         
@@ -16,7 +15,7 @@ class PlayGame:
         else:
             self.player = [bot2, bot1]
             
-        self.env = Environment.Environment()
+        self.env = env
         self.deck = [{}, {}]
         self.hand = [{}, {}]
         self.discard = [{}, {}]
@@ -356,6 +355,11 @@ class PlayGame:
                 if self.env.card_map['curse']['supply'] > 0:
                     self.discard[1 - player]['curse'] += 1
                     self.env.card_map['curse']['supply'] -= 1
+            else:
+                if self.verbose > 0:
+                    print('Moat blocked!')
+                    if self.verbose == 2:
+                        time.sleep(.5)
 
         elif action == 'moat':
             self.hand[player]['moat'] -= 1
@@ -395,6 +399,7 @@ class PlayGame:
                                 self.discard[1 - player][militia[cardi]] += 1
                                 if self.verbose > 0:
                                     print('Discard: ', militia[cardi])
+                                    time.sleep(.5)
                             else:
                                 self.random_discard(1 - player, 1)
 
@@ -402,6 +407,11 @@ class PlayGame:
                         self.random_discard(1 - player, sum(self.hand[1 - player].values()) - 3)
                 except:
                     self.random_discard(1 - player, sum(self.hand[1 - player].values()) - 3)
+            else:
+                if self.verbose > 0:
+                    print('Moat blocked!')
+                    time.sleep(.5)
+
         elif action == 'workshop':
             self.hand[player]['workshop'] -= 1
             self.in_play[player]['workshop'] += 1
@@ -426,6 +436,8 @@ class PlayGame:
                 None
             if self.verbose > 0:
                 print('Workshop gain:', workshop)
+                if self.verbose == 2:
+                    time.sleep(.5)
 
     def random_discard(self, player, n):
         for i in range(n):
@@ -436,6 +448,8 @@ class PlayGame:
                     self.discard[player][card] += 1
                     if self.verbose > 0:
                         print('Random discard: ', card)
+                        if self.verbose == 2:
+                            time.sleep(.5)
                     break
                 else:
                     to_disc -= self.hand[player][card]

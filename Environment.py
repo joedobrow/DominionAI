@@ -1,12 +1,23 @@
+import random
+
 class Environment:
     
-    def __init__(self):
-        
-        # Key:
-        # Types is an array that can have length more than 1 in the case of cards such as
-        # witch: ['action', 'attack']
-        
-        self.reset_supply()     
+    def __init__(self, subsample = None):
+
+        self.reset_supply()
+        base_cards = ['copper', 'silver', 'gold', 'estate', 'duchy', 'province', 'curse']
+
+        if subsample:
+            kingdom_cards = []
+            for card in self.card_map:
+                if card not in base_cards:
+                    kingdom_cards.append(card)
+            sampled_cards = random.sample(kingdom_cards, subsample)
+
+            for card in self.card_map:
+                if card not in sampled_cards:
+                    self.card_map[card]['supply'] = 0
+
         
     def check_win(self):
         # Returns True if the game is over, and False otherwise
@@ -40,7 +51,7 @@ class Environment:
             'moat': {'cost': 2, 'coin': 0, 'vp': 0, 'types': ['action', 'reaction'], 'supply': 10, 'start_supply': 10},
             'moneylender': {'cost': 4, 'coin': 0, 'vp': 0, 'types': ['action'], 'supply': 10, 'start_supply': 10},
             'remodel': {'cost': 4, 'coin': 0, 'vp': 0, 'types': ['action'], 'supply': 10, 'start_supply': 10},
-            # TEMPORARILY BANNED 'smithy': {'cost': 4, 'coin': 0, 'vp': 0, 'types': ['action'], 'supply': 10, 'start_supply': 10},
+            'smithy': {'cost': 4, 'coin': 0, 'vp': 0, 'types': ['action'], 'supply': 10, 'start_supply': 10},
             'village': {'cost': 3, 'coin': 0, 'vp': 0, 'types': ['action'], 'supply': 10, 'start_supply': 10},
             'witch': {'cost': 5, 'coin': 0, 'vp': 0, 'types': ['action', 'attack'], 'supply': 10, 'start_supply': 10},
             'workshop': {'cost': 3, 'coin': 0, 'vp': 0, 'types': ['action'], 'supply': 10, 'start_supply': 10}

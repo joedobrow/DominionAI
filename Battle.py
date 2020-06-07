@@ -1,11 +1,12 @@
 # - - - - - - - - IMPORTS - - - - - - - - - - - - - - - -
 
 import random
+import copy
+
 import Environment
 import PlayGame
 import GUI
-import JoeBotW4
-import copy
+import BaseBot
 
 # - - - -  - - - -CHANGE THESE VARIABLES - - - - - - - - -
 # verbose 0: display  score, runtime, average VP, and turn win over multiple games
@@ -14,9 +15,7 @@ import copy
 # verbose 3: GUI (BROKEN)
 
 verbose = 0
-num_games = 100
-
-bots = [JoeBotW4.BigMoney(), JoeBotW4.GeneralBot()]
+num_games = 400
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -51,20 +50,21 @@ if verbose > 0:
 	iterations = 1
 else:
 	iterations = num_games
-
-
-print('\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -')
-print('\t\t\tDOMINION BOT BATTLES')
-print('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -')
-print("\n\n\nBot 1: {}\t\tBot 2: {}".format(bots[0].name, bots[1].name), '\n')
 this_data = []
 
 for i in range(iterations):
+	env = Environment.Environment(4)
+	bots = [BaseBot.BaseBot(env.card_map), BaseBot.BaseBot(env.card_map)]
+	if i == 0:
+		print('\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -')
+		print('\t\t\tDOMINION BOT BATTLES')
+		print('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -')
+		print("\n\n\nBot 1: {}\t\tBot 2: {}".format(bots[0].name, bots[1].name), '\n')
 	if verbose == 0:
 		if (i%(max(iterations // 10, 1)) == 0):
 			print('{} out of {} epochs completed, score: {}'.format(i, iterations, score))
 
-	x = PlayGame.PlayGame(bots[0], bots[1], verbose=verbose)
+	x = PlayGame.PlayGame(bots[0], bots[1], env, verbose=verbose)
 	result = x.play_game()
 	score[result[0]] += 1
 	avg_turn_win[result[0]] += result[4]
