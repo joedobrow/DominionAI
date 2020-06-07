@@ -388,31 +388,18 @@ class PlayGame:
                                 player
                             )
                 try:
-                    if (len(militia) == 2) and (self.hand[1 - player][militia[0]] > 0) and (self.hand[1 - player][militia[1]] > 0) and militia[0] in card_map and militia[1] in card_map: 
-                            self.hand[1- player][militia[0]] -= 1
-                            self.discard[1 - player][militia[0]] += 1
-                            self.hand[1- player][militia[1]] -= 1
-                            self.discard[1 - player][militia[1]] += 1
-                    else:
-                        for i in range(2):
-                            to_disc = random.randint(1, sum(self.hand[1 - player].values()))
-                            for card in self.hand[1 - player]:
-                                if to_disc <= self.hand[1 - player][card]:
-                                    self.hand[1 - player][card] -= 1
-                                    self.discard[1 - player][card] += 1
-                                    break
-                                else:
-                                    to_disc -= self.hand[1 - player][card]
-                except:
-                    for i in range(sum(self.hand[1 - player].values()) - 3):
-                        to_disc = random.randint(1, sum(self.hand[1 - player].values()))
-                        for card in self.hand[1 - player]:
-                            if self.hand[1 - player][card] >= to_disc:
-                                self.hand[1 - player][card] -= 1
-                                self.discard[1 - player][card] += 1
-                                break
+                    if (len(militia) == sum(self.hand[1 - player]).values()) - 3:
+                        for card in range(len(militia)):
+                            if self.hand[1 - player][militia[card]] > 0:
+                                self.hand[1- player][militia[card]] -= 1
+                                self.discard[1 - player][militia[card]] += 1
                             else:
-                                to_disc -= self.hand[1 - player][card]
+                                self.random_discard(1 - player, 1)
+
+                    else:
+                        self.random_discard(sum(self.hand[1 - player].values()) - 3)
+                except:
+                    self.random_discard(1 - player, sum(self.hand[1 - player].values()) - 3)
         elif action == 'workshop':
             self.hand[player]['workshop'] -= 1
             self.in_play[player]['workshop'] += 1
@@ -437,4 +424,15 @@ class PlayGame:
                 None
             if self.verbose > 0:
                 print('Workshop gain:', workshop)
+
+    def random_discard(self, player, n):
+        for i in range(n):
+            to_disc = random.randint(1, sum(self.hand[player].values()))
+            for card in self.hand[player]:
+                if self.hand[player][card] >= to_disc:
+                    self.hand[player][card] -= 1
+                    self.discard[player][card] += 1
+                    break
+                else:
+                    to_disc -= self.hand[player][card]
 
