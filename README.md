@@ -32,3 +32,13 @@ Another neck and neck showdown between Joe and Kellen. KellenBot003 highlighted 
 <h3>Week 4 6/7/2020</h3>
 
 New cards: Moat, Workshop, Militia, Council Room
+
+1st Place: Tom with Pun BOT 420
+2nd Place: Joe with Generalized Bot
+
+Tom took his first victory with a rogue approach to the meta and workshopped gardens for the win. This was an interesting answer to the attack decks
+
+<h3>Week 5 6/20/2020</h3>
+
+New cards: None. Smithy unbanned
+Every game is now a subsample of 4 kingdom cards
