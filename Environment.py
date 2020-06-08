@@ -5,29 +5,29 @@ class Environment:
     def __init__(self, subsample = None):
 
         self.reset_supply()
-        base_cards = ['copper', 'silver', 'gold', 'estate', 'duchy', 'province', 'curse']
+        self.base_cards = ['copper', 'silver', 'gold', 'estate', 'duchy', 'province', 'curse']
 
         if subsample:
-            kingdom_cards = []
+            self.kingdom_cards = []
             for card in self.card_map:
-                if card not in base_cards:
-                    kingdom_cards.append(card)
-            sampled_cards = random.sample(kingdom_cards, subsample)
+                if card not in self.base_cards:
+                    self.kingdom_cards.append(card)
+            self.subset_cards = random.sample(self.kingdom_cards, subsample) + self.base_cards
 
             for card in self.card_map:
-                if card not in sampled_cards:
+                if (card not in self.subset_cards) and (card not in self.base_cards):
                     self.card_map[card]['supply'] = 0
 
         
     def check_win(self):
         # Returns True if the game is over, and False otherwise
-        
         if self.card_map['province']['supply'] == 0:
             return True
         else:
             count = 0
-            for card in self.card_map.keys():
+            for card in self.subset_cards:
                 if self.card_map[card]['supply'] == 0:
+                    print(card)
                     count += 1
             if count > 2:
                 return True

@@ -7,6 +7,7 @@ import Environment
 import PlayGame
 import GUI
 import BaseBot
+import JoeBotW5
 
 # - - - -  - - - -CHANGE THESE VARIABLES - - - - - - - - -
 # verbose 0: display  score, runtime, average VP, and turn win over multiple games
@@ -14,8 +15,8 @@ import BaseBot
 # verbose 2: turn by turn
 # verbose 3: GUI (BROKEN)
 
-verbose = 0
-num_games = 400
+verbose = 1
+num_games = 100
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -38,6 +39,8 @@ cards = {
 	'witch': 0,
 	'workshop': 0
 }
+
+base_cards = ['copper', 'silver', 'gold', 'estate', 'duchy', 'province', 'curse']
 avg_turn_win = [0, 0]
 score = [0, 0]
 remodel_trash = [copy.deepcopy(cards), copy.deepcopy(cards)]
@@ -53,19 +56,31 @@ else:
 this_data = []
 
 for i in range(iterations):
+
 	env = Environment.Environment(4)
-	bots = [BaseBot.BaseBot(env.card_map), BaseBot.BaseBot(env.card_map)]
+	bots = [JoeBotW5.GeneralBot(env.card_map), JoeBotW5.BigMoney(env.card_map)]
+
 	if i == 0:
 		print('\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -')
 		print('\t\t\tDOMINION BOT BATTLES')
 		print('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -')
 		print("\n\n\nBot 1: {}\t\tBot 2: {}".format(bots[0].name, bots[1].name), '\n')
+
+	if verbose > 0:
+		print('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -')
+		print('Kingdom Cards in Pool:')
+		for card in cards:
+			if (card not in base_cards) and env.card_map[card]['supply'] > 0:
+				print(card)
+		print('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -')
+
 	if verbose == 0:
 		if (i%(max(iterations // 10, 1)) == 0):
 			print('{} out of {} epochs completed, score: {}'.format(i, iterations, score))
 
 	x = PlayGame.PlayGame(bots[0], bots[1], env, verbose=verbose)
 	result = x.play_game()
+	
 	score[result[0]] += 1
 	avg_turn_win[result[0]] += result[4]
 	avg_vp[result[0]] += result[2]
